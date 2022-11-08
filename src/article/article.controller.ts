@@ -21,13 +21,13 @@ export class ArticleController {
   }
 
   @Get()
-  findAll() {
-    return this.articleService.findAll()
+  findAllArticle() {
+    return this.articleService.findAllArticle()
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.articleService.findOne(+id)
+  findArticleById(@Param('id') id: number) {
+    return this.articleService.findArticleById(id)
   }
 
   @Patch(':id')

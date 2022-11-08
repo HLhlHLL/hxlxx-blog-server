@@ -20,12 +20,16 @@ export class ArticleService {
     return this.article.save(article)
   }
 
-  findAll() {
-    return `This action returns all article`
+  findAllArticle() {
+    return this.article.find()
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} article`
+  findArticleById(id: number) {
+    return this.article.find({
+      where: {
+        id
+      }
+    })
   }
 
   update(id: number, updateArticleDto: UpdateArticleDto) {
