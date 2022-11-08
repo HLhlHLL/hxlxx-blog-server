@@ -5,17 +5,20 @@ import {
   Body,
   Patch,
   Param,
-  Delete
+  Delete,
+  UseGuards
 } from '@nestjs/common'
 import { ArticleService } from './article.service'
 import { CreateArticleDto } from './dto/create-article.dto'
 import { UpdateArticleDto } from './dto/update-article.dto'
+import ArticleGuard from 'src/libs/guard/ArticleGuard'
 
 @Controller('article')
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @Post()
+  @UseGuards(ArticleGuard)
   create(@Body() createArticleDto: CreateArticleDto) {
     return this.articleService.create(createArticleDto)
   }

@@ -12,7 +12,6 @@ export class ArticleService {
   ) {}
 
   create(createArticleDto: CreateArticleDto) {
-    console.log(createArticleDto)
     const article = new Article()
     article.title = createArticleDto.title
     article.content = createArticleDto.content
