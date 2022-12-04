@@ -14,8 +14,8 @@ export class ExcFilter implements ExceptionFilter {
     const res = ctx.getResponse<Response>()
     const status = exception.getStatus()
     res.status(status).json({
-      code: 400,
-      status,
+      code: status,
+      status: status >= 200 && status < 400 ? 'success' : 'failed',
       message: exception.getResponse(),
       time: new Date(),
       method: req.method,
