@@ -5,8 +5,7 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
-  UseGuards
+  Delete
 } from '@nestjs/common'
 import { ArticleService } from './article.service'
 import { CreateArticleDto } from './dto/create-article.dto'
@@ -18,9 +17,10 @@ import { ParseIntPipe } from '@nestjs/common'
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createArticleDto: CreateArticleDto) {
+    createArticleDto.cover_url = ''
     return this.articleService.create(createArticleDto)
   }
 

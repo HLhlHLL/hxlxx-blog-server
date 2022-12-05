@@ -8,6 +8,7 @@ import { LocalStrategy } from '../libs/strategies/local.strategy'
 import { MailerModule } from '@nestjs-modules/mailer'
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter'
 import * as path from 'path'
+import config from 'env.config'
 
 @Module({
   imports: [
@@ -16,16 +17,16 @@ import * as path from 'path'
     JwtModule,
     MailerModule.forRoot({
       transport: {
-        host: 'smtp.exmail.qq.com', //邮箱服务器地址
-        port: 465, //服务器端口 默认 465
+        host: config.EMAIL_SERVER_HOST, //邮箱服务器地址
+        port: config.EMAIL_SERVER_PORT, //服务器端口 默认 465
         auth: {
-          user: 'huanglei@hxlx33.wecom.work', //你的邮箱地址
-          pass: 'Rw589TFn6oihZ4vu'
+          user: config.ROOT_EMAIL, //你的邮箱地址
+          pass: config.EMAIL_CLIENT_PASSWORD
         }
       },
       // preview: true, //是否开启预览，开启了这个属性，在调试模式下会自动打开一个网页，预览邮件
       defaults: {
-        from: '验证邮件 <huanglei@hxlx33.wecom.work>' //发送人 你的邮箱地址
+        from: `验证邮件 <${config.ROOT_EMAIL}>` //发送人 你的邮箱地址
       },
       template: {
         dir: path.join(process.cwd(), './src/template'), //这里就是你的ejs模板文件夹路径

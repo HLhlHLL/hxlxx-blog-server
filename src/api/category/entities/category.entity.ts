@@ -9,6 +9,12 @@ export class Category {
   @Column()
   category_name: string
 
+  @Column()
+  created_at: Date
+
+  @Column()
+  updated_at: Date
+
   @OneToMany(() => Article, (article) => article.category)
   articles: Article[]
 }

@@ -10,16 +10,22 @@ import { CategoryModule } from './api/category/category.module'
 import { AuthService } from './auth/auth.service'
 import { AuthModule } from './auth/auth.module'
 import { JwtService } from '@nestjs/jwt'
+import { RoleModule } from './api/role/role.module'
+import { PermissionModule } from './api/permission/permission.module'
+import { UploadController } from './upload/upload.controller'
+import { UploadService } from './upload/upload.service'
+import { UploadModule } from './upload/upload.module'
+import config from 'env.config'
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'mysql', //数据库类型
-      username: 'root', //账号
-      password: '123456', //密码
-      host: 'localhost', //host
-      port: 3306, //
-      database: 'blog', //库名
+      type: config.DATABASE_TYPE, //数据库类型
+      username: config.MYSQL_USERNAME, //账号
+      password: config.MYSQL_PASSWORD, //密码
+      host: config.MYSQL_HOST, //host
+      port: config.MYSQL_PORT, //
+      database: config.MYSQL_DATABASE_NAME, //库名
       synchronize: true, //synchronize字段代表是否自动将实体类同步到数据库
       retryDelay: 500, //重试连接数据库间隔
       retryAttempts: 10, //重试连接数据库的次数
@@ -31,9 +37,12 @@ import { JwtService } from '@nestjs/jwt'
     CommentModule,
     TagModule,
     CategoryModule,
-    AuthModule
+    AuthModule,
+    RoleModule,
+    PermissionModule,
+    UploadModule
   ],
-  controllers: [AppController],
-  providers: [AppService, AuthService, JwtService]
+  controllers: [AppController, UploadController],
+  providers: [AppService, AuthService, JwtService, UploadService]
 })
 export class AppModule {}

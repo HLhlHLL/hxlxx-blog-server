@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common'
-import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm'
-import { EntityManager, Repository } from 'typeorm'
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
 import { CreateCategoryDto } from './dto/create-category.dto'
 import { UpdateCategoryDto } from './dto/update-category.dto'
 import { Category } from './entities/category.entity'
@@ -8,15 +8,23 @@ import { Category } from './entities/category.entity'
 @Injectable()
 export class CategoryService {
   constructor(
-    @InjectEntityManager() private readonly manager: EntityManager,
     @InjectRepository(Category)
     private readonly categoryRep: Repository<Category>
   ) {}
 
   async create({ category_name }: CreateCategoryDto) {
-    const cate = new Category()
-    cate.category_name = category_name
-    const res = await this.categoryRep.save(cate)
+    const isExist = await this.categoryRep.findOneBy({ category_name })
+    if (isExist) {
+      throw new HttpException(
+        'The category is already exist',
+        HttpStatus.BAD_REQUEST
+      )
+    }
+    const category = new Category()
+    category.category_name = category_name
+    category.created_at = new Date()
+    category.updated_at = category.created_at
+    const res = await this.categoryRep.save(category)
     return res
   }
 
@@ -31,9 +39,18 @@ export class CategoryService {
   }
 
   async update(id: number, { category_name }: UpdateCategoryDto) {
-    const res = await this.categoryRep.update(id, { category_name })
-    console.log(res)
-    return 'update category successfully'
+    const { affected } = await this.categoryRep.update(id, {
+      category_name,
+      created_at: new Date()
+    })
+    if (affected > 0) {
+      return 'update category successfully'
+    } else {
+      throw new HttpException(
+        'Update failed, please check the parameter',
+        HttpStatus.BAD_REQUEST
+      )
+    }
   }
 
   async remove(id: number) {

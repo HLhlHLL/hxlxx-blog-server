@@ -1,23 +1,34 @@
 import {
-  ArrayMinSize,
   ArrayNotEmpty,
   ArrayUnique,
+  IsDefined,
   IsNotEmpty,
-  IsNumber
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUrl
 } from 'class-validator'
 
 export class CreateArticleDto {
+  @IsDefined()
   @IsNotEmpty()
   title: string
 
+  @IsDefined()
   @IsNotEmpty()
   content: string
 
+  @IsDefined()
   @IsNotEmpty()
   description: string
 
+  @IsOptional()
+  @IsString()
+  @IsUrl()
+  cover_url?: string
+
+  @IsDefined()
   @ArrayNotEmpty()
-  @ArrayMinSize(1)
   @ArrayUnique()
   @IsNumber(
     {
@@ -28,7 +39,13 @@ export class CreateArticleDto {
   )
   tag_ids: number[]
 
+  @IsDefined()
   @IsNotEmpty()
   @IsNumber()
   category_id: number
+
+  @IsDefined()
+  @IsNotEmpty()
+  @IsNumber()
+  author_id: number
 }
