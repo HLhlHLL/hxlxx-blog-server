@@ -1,11 +1,13 @@
 import {
-  IsAlphanumeric,
   IsNotEmpty,
   IsOptional,
   Length,
   IsNumber,
   IsEmail,
-  IsDefined
+  IsDefined,
+  IsUrl,
+  IsString,
+  IsAscii
 } from 'class-validator'
 
 export class CreateUserDto {
@@ -16,13 +18,18 @@ export class CreateUserDto {
   @IsDefined()
   @IsNotEmpty()
   @Length(5, 10)
-  @IsAlphanumeric()
   username: string
 
   @IsDefined()
   @IsNotEmpty()
   @Length(6, 16)
+  @IsAscii()
   password: string
+
+  @IsOptional()
+  @IsString()
+  @IsUrl()
+  avatar_url?: string
 
   @IsDefined()
   @IsNotEmpty()

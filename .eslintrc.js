@@ -22,6 +22,7 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     'comma-dangle': [0],
-    semi: [0]
+    semi: [0],
+    'prefer-const': [0]
   }
 }

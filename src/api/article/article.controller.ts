@@ -5,13 +5,16 @@ import {
   Body,
   Patch,
   Param,
-  Delete
+  Delete,
+  UseInterceptors,
+  UploadedFile
 } from '@nestjs/common'
 import { ArticleService } from './article.service'
-import { CreateArticleDto } from './dto/create-article.dto'
-import { UpdateArticleDto } from './dto/update-article.dto'
 import { JwtAuthGuard } from 'src/libs/guard/jwt.guard'
 import { ParseIntPipe } from '@nestjs/common'
+import { FileInterceptor } from '@nestjs/platform-express'
+import config from 'env.config'
+import { ValidateArticlePipe } from 'src/libs/pipe/validate-article.pipe'
 
 @Controller('article')
 export class ArticleController {
@@ -19,9 +22,13 @@ export class ArticleController {
 
   // @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createArticleDto: CreateArticleDto) {
-    createArticleDto.cover_url = ''
-    return this.articleService.create(createArticleDto)
+  @UseInterceptors(FileInterceptor('article_cover'))
+  async create(
+    @Body(new ValidateArticlePipe()) article: any,
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    const cover_url = `${config.BASE_URL}/assets/article_cover/${file.filename}`
+    return this.articleService.create(article, cover_url)
   }
 
   @Get()
@@ -34,12 +41,14 @@ export class ArticleController {
     return this.articleService.findById(id)
   }
 
-  @Patch(':id')
-  update(
-    @Param('id', new ParseIntPipe()) id: number,
-    @Body() updateArticleDto: UpdateArticleDto
+  @Patch('/update')
+  @UseInterceptors(FileInterceptor('article_cover'))
+  async update(
+    @Body(new ValidateArticlePipe(1)) article: any,
+    @UploadedFile() file: Express.Multer.File
   ) {
-    return this.articleService.update(id, updateArticleDto)
+    const cover_url = `${config.BASE_URL}/assets/article_cover/${file.filename}`
+    return this.articleService.update(article.id, article, cover_url)
   }
 
   @Delete(':id')

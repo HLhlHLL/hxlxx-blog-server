@@ -7,14 +7,20 @@ import { JwtStrategy } from '../libs/strategies/jwt.strategy'
 import { LocalStrategy } from '../libs/strategies/local.strategy'
 import { MailerModule } from '@nestjs-modules/mailer'
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter'
-import * as path from 'path'
+import { join } from 'path'
+import { AuthController } from './auth.controller'
 import config from 'env.config'
 
 @Module({
   imports: [
     UserModule,
     PassportModule,
-    JwtModule,
+    JwtModule.register({
+      secret: config.TOKEN_SECRET,
+      signOptions: {
+        expiresIn: '1h'
+      }
+    }),
     MailerModule.forRoot({
       transport: {
         host: config.EMAIL_SERVER_HOST, //邮箱服务器地址
@@ -29,7 +35,7 @@ import config from 'env.config'
         from: `验证邮件 <${config.ROOT_EMAIL}>` //发送人 你的邮箱地址
       },
       template: {
-        dir: path.join(process.cwd(), './src/template'), //这里就是你的ejs模板文件夹路径
+        dir: join(process.cwd(), './src/template'), //这里就是你的ejs模板文件夹路径
         adapter: new EjsAdapter(),
         options: {
           strict: true //严格模式
@@ -38,6 +44,7 @@ import config from 'env.config'
     })
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
+  controllers: [AuthController],
   exports: [AuthService]
 })
 export class AuthModule {}

@@ -7,13 +7,9 @@ import { UserModule } from './api/user/user.module'
 import { CommentModule } from './api/comment/comment.module'
 import { TagModule } from './api/tag/tag.module'
 import { CategoryModule } from './api/category/category.module'
-import { AuthService } from './auth/auth.service'
 import { AuthModule } from './auth/auth.module'
-import { JwtService } from '@nestjs/jwt'
 import { RoleModule } from './api/role/role.module'
 import { PermissionModule } from './api/permission/permission.module'
-import { UploadController } from './upload/upload.controller'
-import { UploadService } from './upload/upload.service'
 import { UploadModule } from './upload/upload.module'
 import config from 'env.config'
 
@@ -42,7 +38,7 @@ import config from 'env.config'
     PermissionModule,
     UploadModule
   ],
-  controllers: [AppController, UploadController],
-  providers: [AppService, AuthService, JwtService, UploadService]
+  controllers: [AppController],
+  providers: [AppService]
 })
 export class AppModule {}

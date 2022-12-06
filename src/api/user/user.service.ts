@@ -1,11 +1,12 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { HttpStatus, Injectable } from '@nestjs/common'
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm'
 import { EntityManager, Repository } from 'typeorm'
 import { CreateUserDto } from './dto/create-user.dto'
-import { UpdateUserDto } from './dto/update-user.dto'
 import { User } from './entities/user.entity'
-import * as bcrypt from 'bcryptjs'
+import { compareSync, hashSync } from 'bcryptjs'
 import { Role } from '../role/entities/role.entity'
+import config from 'env.config'
+import { throwHttpException } from 'src/libs/utils'
 
 @Injectable()
 export class UserService {
@@ -22,7 +23,7 @@ export class UserService {
       }
     }
     if (global.EMAIL_CODE !== code) {
-      throw new HttpException('The code is wrong!!', HttpStatus.BAD_REQUEST)
+      throwHttpException('The code is wrong!!', HttpStatus.BAD_REQUEST)
     }
     const user = new User()
     const role = await this.manager.findOneBy(Role, { role_name: 'user' })
@@ -31,7 +32,8 @@ export class UserService {
     user.email = email
     user.created_at = new Date()
     user.updated_at = user.created_at
-    password = bcrypt.hashSync(password, 10)
+    user.avatar_url = config.DEFAULT_AVATAR_URL
+    password = hashSync(password, 10)
     user.password = password
     const { password: _, ...res } = await this.userRep.save(user)
     return res
@@ -73,13 +75,73 @@ export class UserService {
     return res
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    await this.userRep.update(id, updateUserDto)
-    return 'update user successfully'
+  async resetUsername({ id, username }) {
+    const { affected } = await this.userRep.update(id, { username })
+    if (affected > 0) {
+      return 'Update username successfully'
+    } else {
+      throwHttpException(
+        'Update username failed, please check the parameter',
+        HttpStatus.BAD_REQUEST
+      )
+    }
+  }
+
+  async authentication({ id, password }) {
+    const user = await this.userRep.findOneBy({ id })
+    if (!user) {
+      throwHttpException(
+        'User is not exist, please check the parameter',
+        HttpStatus.BAD_REQUEST
+      )
+    }
+    const auth = compareSync(password, user.password)
+    if (auth) {
+      const token = Math.random().toString().slice(-6)
+      global.TEMP_TOKEN = token
+      return { token }
+    } else {
+      throwHttpException(
+        'Password is wrong, please try again',
+        HttpStatus.BAD_REQUEST
+      )
+    }
+  }
+
+  async resetPassword(user) {
+    if (global.TEMP_TOKEN === user.auth_token) {
+      const password = hashSync(user.password, 10)
+      const { affected } = await this.userRep.update(user.id, { password })
+      if (affected > 0) {
+        return 'update user successfully'
+      } else {
+        throwHttpException(
+          'Reset password failed, please check the parameter',
+          HttpStatus.BAD_REQUEST
+        )
+      }
+    } else {
+      throwHttpException(
+        'Authentication failed, please get the authentication token first',
+        HttpStatus.BAD_REQUEST
+      )
+    }
+  }
+
+  async resetAvatar(id, avatar_url) {
+    const { affected } = await this.userRep.update(id, { avatar_url })
+    if (affected > 0) {
+      return 'Update avatar successfully'
+    } else {
+      throwHttpException(
+        'Update avatar failed, please check the parameter',
+        HttpStatus.BAD_REQUEST
+      )
+    }
   }
 
   async remove(id: string) {
     await this.userRep.delete(id)
-    return 'delete user successfully'
+    return 'Delete user successfully'
   }
 }

@@ -1,10 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { HttpStatus, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { UserService } from 'src/api/user/user.service'
 import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer'
-
+import { throwHttpException } from 'src/libs/utils'
+import { compareSync } from 'bcryptjs'
 import * as dayjs from 'dayjs'
-import * as bcrypt from 'bcryptjs'
 
 @Injectable()
 export class AuthService {
@@ -17,18 +17,15 @@ export class AuthService {
   async validateUser(username: string, password: string): Promise<any> {
     const user = await this.userService.findByUserName(username)
     if (user) {
-      const isUserExist = bcrypt.compareSync(password, user.password)
+      const isUserExist = compareSync(password, user.password)
       if (isUserExist) {
         const { password: _, ...result } = user
         return result
       } else {
-        throw new HttpException(
-          'The password is wrong!!',
-          HttpStatus.BAD_REQUEST
-        )
+        throwHttpException('The password is wrong!!', HttpStatus.BAD_REQUEST)
       }
     } else {
-      throw new HttpException(
+      throwHttpException(
         'The user is not exist or the username is wrong!!',
         HttpStatus.BAD_REQUEST
       )
@@ -39,13 +36,10 @@ export class AuthService {
     const { id, username, code } = info
     const payload = { username, sub: id }
     if (global.EMAIL_CODE !== code) {
-      throw new HttpException('The code is wrong!!', HttpStatus.BAD_REQUEST)
+      throwHttpException('The code is wrong!!', HttpStatus.BAD_REQUEST)
     }
     return {
-      access_token: this.jwtService.sign(payload, {
-        secret: process.env.TOKEN_SECRET,
-        expiresIn: '1h'
-      })
+      access_token: 'Bearer ' + this.jwtService.sign(payload)
     }
   }
 

@@ -4,15 +4,18 @@ import { AppModule } from './app.module'
 import { ResponseInterceptor } from './libs/interceptor/response.interceptor'
 import { ExcFilter } from './libs/filter/exception.filter'
 import * as dotenv from 'dotenv'
+import { NestExpressApplication } from '@nestjs/platform-express'
+import { join } from 'path'
 
 dotenv.config()
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create<NestExpressApplication>(AppModule)
   app.enableCors()
   app.useGlobalFilters(new ExcFilter())
   app.useGlobalPipes(new ValidationPipe())
   app.useGlobalInterceptors(new ResponseInterceptor())
+  app.useStaticAssets(join(__dirname, '../assets'), { prefix: '/assets' })
   await app.listen(3000)
 }
 bootstrap()

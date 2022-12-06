@@ -22,6 +22,9 @@ export class User {
   email: string
 
   @Column()
+  avatar_url: string
+
+  @Column()
   created_at: Date
 
   @Column()

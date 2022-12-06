@@ -10,6 +10,11 @@ import {
 } from 'class-validator'
 
 export class CreateArticleDto {
+  @IsOptional()
+  @IsNumber()
+  @IsNotEmpty()
+  id?: number
+
   @IsDefined()
   @IsNotEmpty()
   title: string
