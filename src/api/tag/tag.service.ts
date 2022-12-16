@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { QueryInfo } from 'src/libs/types'
 import { Repository } from 'typeorm'
 import { CreateTagDto } from './dto/create-tag.dto'
 import { UpdateTagDto } from './dto/update-tag.dto'
@@ -27,8 +28,14 @@ export class TagService {
     return res
   }
 
-  async findAll() {
-    const [res, count] = await this.tagRep.findAndCount()
+  async findAll(query?: QueryInfo) {
+    const skip = query.skip ? parseInt(query.skip) : undefined
+    const limit = query.limit ? parseInt(query.limit) : undefined
+    const res = await this.tagRep.find({
+      skip,
+      take: limit
+    })
+    const count = await this.tagRep.count()
     return { res, count }
   }
 

@@ -1,5 +1,6 @@
 import { Tag } from '../../tag/entities/tag.entity'
 import {
+  BaseEntity,
   Column,
   Entity,
   JoinColumn,
@@ -9,9 +10,10 @@ import {
   PrimaryGeneratedColumn
 } from 'typeorm'
 import { Category } from '../../category/entities/category.entity'
+import { QueryInfo } from 'src/libs/types'
 
 @Entity()
-export class Article {
+export class Article extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number
 
@@ -34,7 +36,19 @@ export class Article {
   updated_at: Date
 
   @Column()
-  is_published: boolean
+  article_type: string
+
+  @Column()
+  status: boolean
+
+  @Column()
+  top: boolean
+
+  @Column()
+  recommend: boolean
+
+  @Column()
+  privacy: boolean
 
   @Column()
   author_id: number
@@ -58,4 +72,62 @@ export class Article {
     name: 'category_id'
   })
   category: Category
+
+  static findAll(status?: number, query?: QueryInfo) {
+    const condition = status >= 0 ? `article.status = ${status}` : ''
+    const skip = query.skip ? parseInt(query.skip) : undefined
+    const limit = query.limit ? parseInt(query.limit) : undefined
+    return this.createQueryBuilder('article')
+      .leftJoinAndSelect('article.tags', 'tag')
+      .leftJoinAndSelect('article.category', 'category')
+      .select([
+        'article.id',
+        'article.author_id',
+        'article.title',
+        'article.content',
+        'article.description',
+        'article.cover_url',
+        'article.article_type',
+        'article.top',
+        'article.recommend',
+        'article.privacy',
+        'article.created_at',
+        'article.updated_at',
+        'tag.id',
+        'tag.tag_name',
+        'category.id',
+        'category.category_name'
+      ])
+      .where(condition)
+      .orderBy('article.id', 'DESC')
+      .skip(skip)
+      .take(limit)
+      .getMany()
+  }
+
+  static findById(id: number) {
+    return this.createQueryBuilder('article')
+      .leftJoinAndSelect('article.tags', 'tag')
+      .leftJoinAndSelect('article.category', 'category')
+      .select([
+        'article.id',
+        'article.author_id',
+        'article.title',
+        'article.content',
+        'article.description',
+        'article.cover_url',
+        'article.article_type',
+        'article.top',
+        'article.recommend',
+        'article.privacy',
+        'article.created_at',
+        'article.updated_at',
+        'tag.id',
+        'tag.tag_name',
+        'category.id',
+        'category.category_name'
+      ])
+      .where('article.id = :id', { id })
+      .getOne()
+  }
 }

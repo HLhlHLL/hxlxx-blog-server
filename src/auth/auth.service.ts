@@ -5,10 +5,14 @@ import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer'
 import { throwHttpException } from 'src/libs/utils'
 import { compareSync } from 'bcryptjs'
 import * as dayjs from 'dayjs'
+import { InjectEntityManager } from '@nestjs/typeorm'
+import { EntityManager } from 'typeorm'
+import { User } from 'src/api/user/entities/user.entity'
 
 @Injectable()
 export class AuthService {
   constructor(
+    @InjectEntityManager() private readonly manager: EntityManager,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService
@@ -32,14 +36,25 @@ export class AuthService {
     }
   }
 
-  login(info) {
-    const { id, username, code } = info
-    const payload = { username, sub: id }
-    if (global.EMAIL_CODE !== code) {
-      throwHttpException('The code is wrong!!', HttpStatus.BAD_REQUEST)
-    }
-    return {
-      access_token: 'Bearer ' + this.jwtService.sign(payload)
+  async login(info, captcha: string) {
+    const { username, code } = info
+    if (code?.toLowerCase() === captcha.toLowerCase()) {
+      const user = await this.manager
+        .createQueryBuilder(User, 'user')
+        .leftJoinAndSelect('user.roles', 'role')
+        .where('user.username = :username', { username })
+        .getOne()
+      const isAdmin = user.roles.some((role) => role.role_name === 'admin')
+      if (isAdmin) {
+        const payload = { username, sub: code }
+        return {
+          access_token: 'Bearer ' + this.jwtService.sign(payload)
+        }
+      } else {
+        throwHttpException('You have no authority', HttpStatus.FORBIDDEN)
+      }
+    } else {
+      throwHttpException('The captcha code is wrong', HttpStatus.BAD_REQUEST)
     }
   }
 

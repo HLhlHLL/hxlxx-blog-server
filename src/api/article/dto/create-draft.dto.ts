@@ -5,57 +5,49 @@ import {
   IsDefined,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString
 } from 'class-validator'
 
-export class CreateArticleDto {
+export class CreateDraftDto {
   @IsDefined()
   @IsNotEmpty()
   @IsString()
   title: string
 
-  @IsDefined()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   content: string
 
-  @IsDefined()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   description: string
 
-  @IsDefined()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   article_type: string
 
-  @IsDefined()
-  @IsNotEmpty()
+  @IsOptional()
   @IsBoolean()
   status: boolean
 
-  @IsDefined()
-  @IsNotEmpty()
+  @IsOptional()
   @IsBoolean()
   top: boolean
 
-  @IsDefined()
-  @IsNotEmpty()
+  @IsOptional()
   @IsBoolean()
   recommend: boolean
 
-  @IsDefined()
-  @IsNotEmpty()
+  @IsOptional()
   @IsBoolean()
   privacy: boolean
 
-  @IsDefined()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   cover_url: string
 
-  @IsDefined()
-  @ArrayNotEmpty()
+  @IsOptional()
   @ArrayUnique()
   @IsNumber(
     {
@@ -66,13 +58,11 @@ export class CreateArticleDto {
   )
   tag_ids: number[]
 
-  @IsDefined()
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   category_id: number
 
-  @IsDefined()
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   author_id: number
 }

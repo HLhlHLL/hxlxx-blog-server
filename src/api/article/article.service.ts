@@ -6,6 +6,8 @@ import { EntityManager, Repository } from 'typeorm'
 import { Tag } from '../tag/entities/tag.entity'
 import { Category } from '../category/entities/category.entity'
 import { CreateArticleDto } from './dto/create-article.dto'
+import { CreateDraftDto } from './dto/create-draft.dto'
+import { QueryInfo } from 'src/libs/types'
 
 @Injectable()
 export class ArticleService {
@@ -14,7 +16,7 @@ export class ArticleService {
     @InjectEntityManager() private readonly manager: EntityManager
   ) {}
 
-  async create(articleDto: CreateArticleDto, cover_url: string) {
+  async create(articleDto: CreateArticleDto) {
     let article = new Article()
     const tags = []
     for (const id of articleDto.tag_ids) {
@@ -27,57 +29,61 @@ export class ArticleService {
     article = Object.assign(article, articleDto)
     article.tags = tags
     article.category = category
-    article.cover_url = cover_url
-    article.is_published = false
     article.created_at = new Date()
     article.updated_at = article.created_at
     // 赋值，建立关联
     await this.manager.save(Article, article)
-    return 'Create article successfully'
+    return article
   }
 
-  async findAll() {
-    const [res, count] = await this.articleRep
-      .createQueryBuilder('article')
-      .innerJoinAndSelect('article.tags', 'tag')
-      .innerJoinAndSelect('article.category', 'category')
-      .select([
-        'article.id',
-        'article.author_id',
-        'article.title',
-        'article.content',
-        'article.description',
-        'article.is_published',
-        'article.created_at',
-        'tag.id',
-        'tag.tag_name',
-        'category.id',
-        'category.category_name'
-      ])
-      .getManyAndCount()
+  async createDraft(draft: CreateDraftDto) {
+    let article = new Article()
+    const tags = []
+    for (const id of draft.tag_ids) {
+      const tag = await this.manager.findOneBy(Tag, { id })
+      tags.push(tag)
+    }
+    const category = await this.manager.findOneBy(Category, {
+      id: draft.category_id
+    })
+    article = Object.assign(article, draft)
+    article.tags = tags
+    article.category = category
+    article.created_at = new Date()
+    article.updated_at = article.created_at
+    // 赋值，建立关联
+    await this.manager.save(Article, article)
+    return article
+  }
+
+  async findAll(query?: QueryInfo) {
+    const res = await Article.findAll(undefined, query)
+    const count = await this.articleRep.count()
+    return { res, count }
+  }
+
+  async findAllPublished(query?: QueryInfo) {
+    const res = await Article.findAll(1, query)
+    const count = await this.articleRep
+      .createQueryBuilder()
+      .select()
+      .where('status = 1')
+      .getCount()
+    return { res, count }
+  }
+
+  async findAllDraft(query?: QueryInfo) {
+    const res = await Article.findAll(0, query)
+    const count = await this.articleRep
+      .createQueryBuilder()
+      .select()
+      .where('status = 0')
+      .getCount()
     return { res, count }
   }
 
   async findById(id: number) {
-    const res = await this.articleRep
-      .createQueryBuilder('article')
-      .innerJoinAndSelect('article.tags', 'tag')
-      .innerJoinAndSelect('article.category', 'category')
-      .select([
-        'article.id',
-        'article.author_id',
-        'article.title',
-        'article.content',
-        'article.description',
-        'article.is_published',
-        'article.created_at',
-        'tag.id',
-        'tag.tag_name',
-        'category.id',
-        'category.category_name'
-      ])
-      .where({ id })
-      .getOne()
+    const res = await Article.findById(id)
     return res
   }
 

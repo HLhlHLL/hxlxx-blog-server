@@ -7,7 +7,8 @@ import {
   Param,
   Delete,
   UseInterceptors,
-  UploadedFile
+  UploadedFile,
+  Query
 } from '@nestjs/common'
 import { ArticleService } from './article.service'
 import { JwtAuthGuard } from 'src/libs/guard/jwt.guard'
@@ -15,6 +16,9 @@ import { ParseIntPipe } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import config from 'env.config'
 import { ValidateArticlePipe } from 'src/libs/pipe/validate-article.pipe'
+import { CreateArticleDto } from './dto/create-article.dto'
+import { CreateDraftDto } from './dto/create-draft.dto'
+import { QueryInfo } from 'src/libs/types'
 
 @Controller('article')
 export class ArticleController {
@@ -22,18 +26,35 @@ export class ArticleController {
 
   // @UseGuards(JwtAuthGuard)
   @Post()
-  @UseInterceptors(FileInterceptor('article_cover'))
-  async create(
-    @Body(new ValidateArticlePipe()) article: any,
-    @UploadedFile() file: Express.Multer.File
-  ) {
+  async create(@Body() article: CreateArticleDto) {
+    return this.articleService.create(article)
+  }
+
+  @Post('/draft')
+  async createDraft(@Body() draft: CreateDraftDto) {
+    return this.articleService.createDraft(draft)
+  }
+
+  @Post('/cover')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadCover(@UploadedFile() file: Express.Multer.File) {
     const cover_url = `${config.BASE_URL}/assets/article_cover/${file.filename}`
-    return this.articleService.create(article, cover_url)
+    return cover_url
   }
 
   @Get()
-  findAll() {
-    return this.articleService.findAll()
+  findAll(@Query() query?: QueryInfo) {
+    return this.articleService.findAll(query)
+  }
+
+  @Get('/published')
+  async findAllPublished(@Query() query?: QueryInfo) {
+    return this.articleService.findAllPublished(query)
+  }
+
+  @Get('/draft')
+  async findAllDraft(@Query() query?: QueryInfo) {
+    return this.articleService.findAllDraft(query)
   }
 
   @Get(':id')

@@ -5,6 +5,7 @@
     "metatype",
     "nestjs",
     "sendcode",
+    "tinyint",
     "typeorm"
   ]
 }
