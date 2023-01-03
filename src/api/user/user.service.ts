@@ -30,8 +30,6 @@ export class UserService {
     user.roles = [role]
     user.username = username
     user.email = email
-    user.created_at = new Date()
-    user.updated_at = user.created_at
     user.avatar_url = config.DEFAULT_AVATAR_URL
     password = hashSync(password, 10)
     user.password = password

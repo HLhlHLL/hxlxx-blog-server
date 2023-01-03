@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module'
 import { RoleModule } from './api/role/role.module'
 import { PermissionModule } from './api/permission/permission.module'
 import { UploadModule } from './upload/upload.module'
+import { MenuModule } from './api/menu/menu.module'
 import config from 'env.config'
 
 @Module({
@@ -36,7 +37,8 @@ import config from 'env.config'
     AuthModule,
     RoleModule,
     PermissionModule,
-    UploadModule
+    UploadModule,
+    MenuModule
   ],
   controllers: [AppController],
   providers: [AppService]

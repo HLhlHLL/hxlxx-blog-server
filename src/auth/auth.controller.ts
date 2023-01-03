@@ -5,11 +5,13 @@ import {
   Body,
   Get,
   Res,
-  Session
+  Session,
+  Req
 } from '@nestjs/common'
 import { LocalAuthGuard } from 'src/libs/guard/local.guard'
 import { AuthService } from 'src/auth/auth.service'
 import * as svgCaptcha from 'svg-captcha'
+import { Request } from 'express'
 
 @Controller('/')
 export class AuthController {
@@ -17,8 +19,8 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  login(@Body() info, @Session() session) {
-    return this.authService.login(info, session.captcha || '')
+  login(@Body() info, @Session() session, @Req() req: Request) {
+    return this.authService.login(info, session.captcha || '', req.clientIp)
   }
 
   @Get('/captcha')
@@ -30,7 +32,8 @@ export class AuthController {
       // color: true,
       background: '#e471b0',
       width: 80,
-      height: 32
+      height: 32,
+      ignoreChars: 'Igqa'
     })
     session.captcha = text
     res.type('image/svg+xml')

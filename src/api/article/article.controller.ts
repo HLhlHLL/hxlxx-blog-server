@@ -8,36 +8,38 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
-  Query
+  Query,
+  UseGuards
 } from '@nestjs/common'
 import { ArticleService } from './article.service'
 import { JwtAuthGuard } from 'src/libs/guard/jwt.guard'
 import { ParseIntPipe } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import config from 'env.config'
-import { ValidateArticlePipe } from 'src/libs/pipe/validate-article.pipe'
 import { CreateArticleDto } from './dto/create-article.dto'
 import { CreateDraftDto } from './dto/create-draft.dto'
-import { QueryInfo } from 'src/libs/types'
+import { QueryInfo, UpdateTopOrRec } from 'src/libs/types'
+import { UpdateArticleDto } from './dto/update-article.dto'
+import { UpdateDraftDto } from './dto/update-draft.dto'
 
 @Controller('article')
+@UseGuards(JwtAuthGuard)
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
-  // @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() article: CreateArticleDto) {
+  create(@Body() article: CreateArticleDto) {
     return this.articleService.create(article)
   }
 
   @Post('/draft')
-  async createDraft(@Body() draft: CreateDraftDto) {
-    return this.articleService.createDraft(draft)
+  createDraft(@Body() draft: CreateDraftDto) {
+    return this.articleService.create(draft)
   }
 
   @Post('/cover')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadCover(@UploadedFile() file: Express.Multer.File) {
+  uploadCover(@UploadedFile() file: Express.Multer.File) {
     const cover_url = `${config.BASE_URL}/assets/article_cover/${file.filename}`
     return cover_url
   }
@@ -48,12 +50,12 @@ export class ArticleController {
   }
 
   @Get('/published')
-  async findAllPublished(@Query() query?: QueryInfo) {
+  findAllPublished(@Query() query?: QueryInfo) {
     return this.articleService.findAllPublished(query)
   }
 
   @Get('/draft')
-  async findAllDraft(@Query() query?: QueryInfo) {
+  findAllDraft(@Query() query?: QueryInfo) {
     return this.articleService.findAllDraft(query)
   }
 
@@ -62,14 +64,24 @@ export class ArticleController {
     return this.articleService.findById(id)
   }
 
-  @Patch('/update')
-  @UseInterceptors(FileInterceptor('article_cover'))
-  async update(
-    @Body(new ValidateArticlePipe(1)) article: any,
-    @UploadedFile() file: Express.Multer.File
-  ) {
-    const cover_url = `${config.BASE_URL}/assets/article_cover/${file.filename}`
-    return this.articleService.update(article.id, article, cover_url)
+  @Patch()
+  update(@Body() article: UpdateArticleDto) {
+    return this.articleService.update(article.id, article)
+  }
+
+  @Patch('/draft')
+  updateDraft(@Body() article: UpdateDraftDto) {
+    return this.articleService.update(article.id, article)
+  }
+
+  @Patch('/top')
+  updateTop(@Body() status: UpdateTopOrRec) {
+    return this.articleService.updateTop(status)
+  }
+
+  @Patch('/recommend')
+  updateRecommend(@Body() status: UpdateTopOrRec) {
+    return this.articleService.updateRecommend(status)
   }
 
   @Delete(':id')

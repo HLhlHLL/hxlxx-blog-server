@@ -6,13 +6,16 @@ import {
   Patch,
   Param,
   Delete,
-  ParseIntPipe
+  ParseIntPipe,
+  UseGuards
 } from '@nestjs/common'
+import { JwtAuthGuard } from 'src/libs/guard/jwt.guard'
 import { CategoryService } from './category.service'
 import { CreateCategoryDto } from './dto/create-category.dto'
 import { UpdateCategoryDto } from './dto/update-category.dto'
 
 @Controller('category')
+@UseGuards(JwtAuthGuard)
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 

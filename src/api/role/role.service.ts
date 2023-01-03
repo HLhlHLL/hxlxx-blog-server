@@ -1,5 +1,6 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { HttpStatus, Injectable } from '@nestjs/common'
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm'
+import { throwHttpException } from 'src/libs/utils'
 import { EntityManager, Repository } from 'typeorm'
 import { Permission } from '../permission/entities/permission.entity'
 import { CreateRoleDto } from './dto/create-role.dto'
@@ -16,15 +17,10 @@ export class RoleService {
   async create({ role_name }: CreateRoleDto) {
     const isExist = await this.roleRep.findOneBy({ role_name })
     if (isExist) {
-      throw new HttpException(
-        'The role is already exist',
-        HttpStatus.BAD_REQUEST
-      )
+      throwHttpException('The role is already exist', HttpStatus.BAD_REQUEST)
     }
     const role = new Role()
     role.role_name = role_name
-    role.created_at = new Date()
-    role.updated_at = role.created_at
     const res = await this.roleRep.save(role)
     return res
   }
@@ -54,7 +50,7 @@ export class RoleService {
       await this.roleRep.save(role)
       return 'update role successfully'
     } else {
-      throw new HttpException(
+      throwHttpException(
         'Update failed, please check the parameter',
         HttpStatus.BAD_REQUEST
       )

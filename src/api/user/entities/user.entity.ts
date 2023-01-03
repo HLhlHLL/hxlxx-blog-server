@@ -3,8 +3,10 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  ManyToMany,
-  JoinTable
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToOne,
+  JoinColumn
 } from 'typeorm'
 
 @Entity()
@@ -24,23 +26,15 @@ export class User {
   @Column()
   avatar_url: string
 
-  @Column()
+  @CreateDateColumn()
   created_at: Date
 
-  @Column()
+  @UpdateDateColumn()
   updated_at: Date
 
-  @ManyToMany(() => Role, (role) => role.users)
-  @JoinTable({
-    name: 'users_roles',
-    joinColumn: {
-      name: 'user_id',
-      referencedColumnName: 'id'
-    },
-    inverseJoinColumn: {
-      name: 'role_id',
-      referencedColumnName: 'id'
-    }
+  @OneToOne(() => Role, (role) => role.users)
+  @JoinColumn({
+    name: 'role_id'
   })
   roles: Role[]
 }

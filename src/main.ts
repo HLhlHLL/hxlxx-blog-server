@@ -5,6 +5,7 @@ import { ResponseInterceptor } from './libs/interceptor/response.interceptor'
 import { ExcFilter } from './libs/filter/exception.filter'
 import { NestExpressApplication } from '@nestjs/platform-express'
 import { join } from 'path'
+import * as requestIp from 'request-ip'
 import * as dotenv from 'dotenv'
 import * as session from 'express-session'
 
@@ -13,6 +14,7 @@ dotenv.config()
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
   app.enableCors()
+  app.use(requestIp.mw())
   app.use(
     session({
       secret: 'hxlxx',

@@ -1,5 +1,6 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { HttpStatus, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { throwHttpException } from 'src/libs/utils'
 import { Repository } from 'typeorm'
 import { CreateCategoryDto } from './dto/create-category.dto'
 import { UpdateCategoryDto } from './dto/update-category.dto'
@@ -15,15 +16,13 @@ export class CategoryService {
   async create({ category_name }: CreateCategoryDto) {
     const isExist = await this.categoryRep.findOneBy({ category_name })
     if (isExist) {
-      throw new HttpException(
+      throwHttpException(
         'The category is already exist',
         HttpStatus.BAD_REQUEST
       )
     }
     const category = new Category()
     category.category_name = category_name
-    category.created_at = new Date()
-    category.updated_at = category.created_at
     const res = await this.categoryRep.save(category)
     return res
   }
@@ -38,15 +37,12 @@ export class CategoryService {
     return res
   }
 
-  async update(id: number, { category_name }: UpdateCategoryDto) {
-    const { affected } = await this.categoryRep.update(id, {
-      category_name,
-      created_at: new Date()
-    })
+  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+    const { affected } = await this.categoryRep.update(id, updateCategoryDto)
     if (affected > 0) {
       return 'update category successfully'
     } else {
-      throw new HttpException(
+      throwHttpException(
         'Update failed, please check the parameter',
         HttpStatus.BAD_REQUEST
       )

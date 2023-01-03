@@ -1,27 +1,36 @@
-import { Article } from '../../article/entities/article.entity'
 import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
 
 @Entity()
-export class Tag {
-  @PrimaryGeneratedColumn()
+export class Menu {
+  @PrimaryGeneratedColumn('increment')
   id: number
 
+  @Column({
+    nullable: true
+  })
+  pid: number
+
   @Column()
-  tag_name: string
+  title: string
+
+  @Column()
+  icon: string
+
+  @Column()
+  path: string
+
+  @Column()
+  visible: boolean
 
   @CreateDateColumn()
   created_at: Date
 
   @UpdateDateColumn()
   updated_at: Date
-
-  @ManyToMany(() => Article, (article) => article.tags)
-  articles: Article[]
 }

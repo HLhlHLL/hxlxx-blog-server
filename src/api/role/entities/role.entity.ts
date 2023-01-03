@@ -2,10 +2,12 @@ import { Permission } from 'src/api/permission/entities/permission.entity'
 import { User } from 'src/api/user/entities/user.entity'
 import {
   Column,
+  CreateDateColumn,
   Entity,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
 } from 'typeorm'
 
 @Entity()
@@ -16,26 +18,18 @@ export class Role {
   @Column()
   role_name: string
 
-  @Column()
+  @CreateDateColumn()
   created_at: Date
 
-  @Column()
+  @UpdateDateColumn()
   updated_at: Date
 
-  @ManyToMany(() => User, (user) => user.roles)
+  @OneToOne(() => User, (user) => user.roles)
   users: User[]
 
-  @ManyToMany(() => Permission, (permission) => permission.roles)
-  @JoinTable({
-    name: 'roles_permissions',
-    joinColumn: {
-      name: 'role_id',
-      referencedColumnName: 'id'
-    },
-    inverseJoinColumn: {
-      name: 'permission_id',
-      referencedColumnName: 'id'
-    }
+  @OneToOne(() => Permission, (permission) => permission.roles)
+  @JoinColumn({
+    name: 'permission_id'
   })
   permissions: Permission[]
 }

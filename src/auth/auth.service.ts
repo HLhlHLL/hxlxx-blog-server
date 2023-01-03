@@ -7,7 +7,6 @@ import { compareSync } from 'bcryptjs'
 import * as dayjs from 'dayjs'
 import { InjectEntityManager } from '@nestjs/typeorm'
 import { EntityManager } from 'typeorm'
-import { User } from 'src/api/user/entities/user.entity'
 
 @Injectable()
 export class AuthService {
@@ -23,7 +22,8 @@ export class AuthService {
     if (user) {
       const isUserExist = compareSync(password, user.password)
       if (isUserExist) {
-        const { password: _, ...result } = user
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password, ...result } = user
         return result
       } else {
         throwHttpException('The password is wrong!!', HttpStatus.BAD_REQUEST)
@@ -36,22 +36,13 @@ export class AuthService {
     }
   }
 
-  async login(info, captcha: string) {
+  async login(info, captcha: string, ip: string) {
     const { username, code } = info
     if (code?.toLowerCase() === captcha.toLowerCase()) {
-      const user = await this.manager
-        .createQueryBuilder(User, 'user')
-        .leftJoinAndSelect('user.roles', 'role')
-        .where('user.username = :username', { username })
-        .getOne()
-      const isAdmin = user.roles.some((role) => role.role_name === 'admin')
-      if (isAdmin) {
-        const payload = { username, sub: code }
-        return {
-          access_token: 'Bearer ' + this.jwtService.sign(payload)
-        }
-      } else {
-        throwHttpException('You have no authority', HttpStatus.FORBIDDEN)
+      const payload = { username, sub: code }
+      return {
+        access_token: 'Bearer ' + this.jwtService.sign(payload),
+        ip
       }
     } else {
       throwHttpException('The captcha code is wrong', HttpStatus.BAD_REQUEST)

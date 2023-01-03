@@ -7,4 +7,12 @@ export class UpdateArticleDto extends PartialType(CreateArticleDto) {
   @IsNumber()
   @IsNotEmpty()
   id: number
+
+  tags: any[]
+
+  category: any
+
+  updated_at: Date
+
+  created_at: Date
 }

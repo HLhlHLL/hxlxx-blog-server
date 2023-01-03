@@ -17,9 +17,7 @@ import config from 'env.config'
     PassportModule,
     JwtModule.register({
       secret: config.TOKEN_SECRET,
-      signOptions: {
-        expiresIn: '1h'
-      }
+      signOptions: { expiresIn: '1h' }
     }),
     MailerModule.forRoot({
       transport: {

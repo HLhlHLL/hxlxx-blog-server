@@ -7,7 +7,9 @@ import { Tag } from '../tag/entities/tag.entity'
 import { Category } from '../category/entities/category.entity'
 import { CreateArticleDto } from './dto/create-article.dto'
 import { CreateDraftDto } from './dto/create-draft.dto'
-import { QueryInfo } from 'src/libs/types'
+import { QueryInfo, UpdateTopOrRec } from 'src/libs/types'
+import { throwHttpException } from 'src/libs/utils'
+import { UpdateDraftDto } from './dto/update-draft.dto'
 
 @Injectable()
 export class ArticleService {
@@ -16,7 +18,7 @@ export class ArticleService {
     @InjectEntityManager() private readonly manager: EntityManager
   ) {}
 
-  async create(articleDto: CreateArticleDto) {
+  async create(articleDto: CreateArticleDto | CreateDraftDto) {
     let article = new Article()
     const tags = []
     for (const id of articleDto.tag_ids) {
@@ -29,28 +31,6 @@ export class ArticleService {
     article = Object.assign(article, articleDto)
     article.tags = tags
     article.category = category
-    article.created_at = new Date()
-    article.updated_at = article.created_at
-    // 赋值，建立关联
-    await this.manager.save(Article, article)
-    return article
-  }
-
-  async createDraft(draft: CreateDraftDto) {
-    let article = new Article()
-    const tags = []
-    for (const id of draft.tag_ids) {
-      const tag = await this.manager.findOneBy(Tag, { id })
-      tags.push(tag)
-    }
-    const category = await this.manager.findOneBy(Category, {
-      id: draft.category_id
-    })
-    article = Object.assign(article, draft)
-    article.tags = tags
-    article.category = category
-    article.created_at = new Date()
-    article.updated_at = article.created_at
     // 赋值，建立关联
     await this.manager.save(Article, article)
     return article
@@ -87,32 +67,29 @@ export class ArticleService {
     return res
   }
 
-  async update(
-    id: number,
-    { title, content, description, tag_ids, category_id }: UpdateArticleDto,
-    cover_url: string
-  ) {
-    const _article: any = {
-      title,
-      content,
-      description,
-      updated_at: new Date()
-    }
-    cover_url && (_article.cover_url = cover_url)
-    // 更新 article
+  async update(id: number, article: UpdateArticleDto | UpdateDraftDto) {
+    const {
+      tag_ids,
+      category_id,
+      tags,
+      category,
+      created_at,
+      updated_at,
+      ..._article
+    } = article
     const { affected } = await this.articleRep.update(id, _article)
     if (affected > 0) {
-      const tags = []
-      if (tag_ids.length) {
+      // 更新article 和 tag 的关联
+      const article = await this.articleRep.findOneBy({ id })
+      if (tag_ids?.length) {
+        const tags = []
         for (const id of tag_ids) {
           // 更新 tag
           const tag = await this.manager.findOneBy(Tag, { id })
           tag && tags.push(tag)
         }
+        tags.length && (article.tags = tags)
       }
-      // 更新article 和 tag 的关联
-      const article = await this.articleRep.findOneBy({ id })
-      tags.length && (article.tags = tags)
       if (category_id) {
         const category = await this.manager.findOneBy(Category, {
           id: category_id
@@ -123,6 +100,40 @@ export class ArticleService {
       return 'Update article successfully'
     } else {
       throw new HttpException(
+        'Update failed, please check the parameter',
+        HttpStatus.BAD_REQUEST
+      )
+    }
+  }
+
+  async updateTop(status: UpdateTopOrRec) {
+    const { affected } = await this.articleRep
+      .createQueryBuilder()
+      .update()
+      .set({ top: status.top })
+      .where('id = :id', { id: status.id })
+      .execute()
+    if (affected > 0) {
+      return 'Update article top successfully'
+    } else {
+      throwHttpException(
+        'Update failed, please check the parameter',
+        HttpStatus.BAD_REQUEST
+      )
+    }
+  }
+
+  async updateRecommend(status: UpdateTopOrRec) {
+    const { affected } = await this.articleRep
+      .createQueryBuilder()
+      .update()
+      .set({ recommend: status.recommend })
+      .where('id = :id', { id: status.id })
+      .execute()
+    if (affected > 0) {
+      return 'Update article recommend successfully'
+    } else {
+      throwHttpException(
         'Update failed, please check the parameter',
         HttpStatus.BAD_REQUEST
       )

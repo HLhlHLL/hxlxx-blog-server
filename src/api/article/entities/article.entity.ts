@@ -2,12 +2,14 @@ import { Tag } from '../../tag/entities/tag.entity'
 import {
   BaseEntity,
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
 } from 'typeorm'
 import { Category } from '../../category/entities/category.entity'
 import { QueryInfo } from 'src/libs/types'
@@ -29,10 +31,10 @@ export class Article extends BaseEntity {
   @Column()
   cover_url: string
 
-  @Column()
+  @CreateDateColumn()
   created_at: Date
 
-  @Column()
+  @UpdateDateColumn()
   updated_at: Date
 
   @Column()
@@ -73,10 +75,7 @@ export class Article extends BaseEntity {
   })
   category: Category
 
-  static findAll(status?: number, query?: QueryInfo) {
-    const condition = status >= 0 ? `article.status = ${status}` : ''
-    const skip = query.skip ? parseInt(query.skip) : undefined
-    const limit = query.limit ? parseInt(query.limit) : undefined
+  static getQueryBuilder() {
     return this.createQueryBuilder('article')
       .leftJoinAndSelect('article.tags', 'tag')
       .leftJoinAndSelect('article.category', 'category')
@@ -88,6 +87,7 @@ export class Article extends BaseEntity {
         'article.description',
         'article.cover_url',
         'article.article_type',
+        'article.status',
         'article.top',
         'article.recommend',
         'article.privacy',
@@ -98,6 +98,13 @@ export class Article extends BaseEntity {
         'category.id',
         'category.category_name'
       ])
+  }
+
+  static findAll(status?: number, query?: QueryInfo) {
+    const condition = status >= 0 ? `article.status = ${status}` : ''
+    const skip = query.skip ? parseInt(query.skip) : undefined
+    const limit = query.limit ? parseInt(query.limit) : undefined
+    return this.getQueryBuilder()
       .where(condition)
       .orderBy('article.id', 'DESC')
       .skip(skip)
@@ -106,28 +113,6 @@ export class Article extends BaseEntity {
   }
 
   static findById(id: number) {
-    return this.createQueryBuilder('article')
-      .leftJoinAndSelect('article.tags', 'tag')
-      .leftJoinAndSelect('article.category', 'category')
-      .select([
-        'article.id',
-        'article.author_id',
-        'article.title',
-        'article.content',
-        'article.description',
-        'article.cover_url',
-        'article.article_type',
-        'article.top',
-        'article.recommend',
-        'article.privacy',
-        'article.created_at',
-        'article.updated_at',
-        'tag.id',
-        'tag.tag_name',
-        'category.id',
-        'category.category_name'
-      ])
-      .where('article.id = :id', { id })
-      .getOne()
+    return this.getQueryBuilder().where('article.id = :id', { id }).getOne()
   }
 }

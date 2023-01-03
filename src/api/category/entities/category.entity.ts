@@ -1,5 +1,12 @@
 import { Article } from '../../article/entities/article.entity'
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
+} from 'typeorm'
 
 @Entity()
 export class Category {
@@ -9,10 +16,10 @@ export class Category {
   @Column()
   category_name: string
 
-  @Column()
+  @CreateDateColumn()
   created_at: Date
 
-  @Column()
+  @UpdateDateColumn()
   updated_at: Date
 
   @OneToMany(() => Article, (article) => article.category)

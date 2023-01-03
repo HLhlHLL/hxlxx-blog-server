@@ -6,15 +6,18 @@ import {
   Patch,
   Param,
   Delete,
-  Query
+  Query,
+  UseGuards
 } from '@nestjs/common'
 import { TagService } from './tag.service'
 import { CreateTagDto } from './dto/create-tag.dto'
 import { UpdateTagDto } from './dto/update-tag.dto'
 import { ParseIntPipe } from '@nestjs/common'
 import { QueryInfo } from 'src/libs/types'
+import { JwtAuthGuard } from 'src/libs/guard/jwt.guard'
 
 @Controller('tag')
+@UseGuards(JwtAuthGuard)
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
