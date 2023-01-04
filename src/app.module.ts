@@ -9,7 +9,6 @@ import { TagModule } from './api/tag/tag.module'
 import { CategoryModule } from './api/category/category.module'
 import { AuthModule } from './auth/auth.module'
 import { RoleModule } from './api/role/role.module'
-import { PermissionModule } from './api/permission/permission.module'
 import { UploadModule } from './upload/upload.module'
 import { MenuModule } from './api/menu/menu.module'
 import config from 'env.config'
@@ -36,7 +35,6 @@ import config from 'env.config'
     CategoryModule,
     AuthModule,
     RoleModule,
-    PermissionModule,
     UploadModule,
     MenuModule
   ],

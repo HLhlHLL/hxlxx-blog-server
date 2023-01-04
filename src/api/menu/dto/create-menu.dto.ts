@@ -14,7 +14,7 @@ export class CreateMenuDto {
   @IsNotEmpty()
   @IsDefined()
   @IsString()
-  title: string
+  label: string
 
   @IsNotEmpty()
   @IsDefined()

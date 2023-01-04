@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common'
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm'
 import { throwHttpException } from 'src/libs/utils'
 import { EntityManager, Repository } from 'typeorm'
-import { Permission } from '../permission/entities/permission.entity'
+import { Menu } from '../menu/entities/menu.entity'
 import { CreateRoleDto } from './dto/create-role.dto'
 import { UpdateRoleDto } from './dto/update-role.dto'
 import { Role } from './entities/role.entity'
@@ -30,24 +30,23 @@ export class RoleService {
     return res
   }
 
+  async getMenu() {
+    const res = await this.manager
+      .createQueryBuilder(Menu, 'menu')
+      .select(['menu.id', 'menu.pid', 'menu.label'])
+      .getMany()
+    return res
+  }
+
   async findById(id: number) {
     const res = await this.roleRep.findOneBy({ id })
     return res
   }
 
-  async update(id: number, { role_name, permission_ids }: UpdateRoleDto) {
-    const { affected } = await this.roleRep.update(id, { role_name })
+  async update(updateRoleDto: UpdateRoleDto) {
+    const { id, created_at, updated_at, ...role } = updateRoleDto
+    const { affected } = await this.roleRep.update(id, role)
     if (affected > 0) {
-      const permissions = []
-      if (permission_ids.length) {
-        for (const id of permission_ids) {
-          const permission = await this.manager.findOneBy(Permission, { id })
-          permission && permissions.push(permission)
-        }
-      }
-      const role = await this.roleRep.findOneBy({ id })
-      permissions.length && (role.permissions = permissions)
-      await this.roleRep.save(role)
       return 'update role successfully'
     } else {
       throwHttpException(

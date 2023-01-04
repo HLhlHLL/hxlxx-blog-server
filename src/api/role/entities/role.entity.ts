@@ -1,10 +1,8 @@
-import { Permission } from 'src/api/permission/entities/permission.entity'
 import { User } from 'src/api/user/entities/user.entity'
 import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn
@@ -27,9 +25,8 @@ export class Role {
   @OneToOne(() => User, (user) => user.roles)
   users: User[]
 
-  @OneToOne(() => Permission, (permission) => permission.roles)
-  @JoinColumn({
-    name: 'permission_id'
+  @Column({
+    type: 'json'
   })
-  permissions: Permission[]
+  permission_menu: string
 }

@@ -1,12 +1,4 @@
-import {
-  ArrayNotEmpty,
-  ArrayUnique,
-  IsDefined,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  Length
-} from 'class-validator'
+import { IsDefined, IsNotEmpty, IsString, Length } from 'class-validator'
 
 export class CreateRoleDto {
   @IsDefined()
@@ -16,14 +8,6 @@ export class CreateRoleDto {
   role_name: string
 
   @IsDefined()
-  @ArrayNotEmpty()
-  @ArrayUnique()
-  @IsNumber(
-    {
-      allowNaN: false,
-      allowInfinity: false
-    },
-    { each: true }
-  )
-  permission_ids: number[]
+  @IsNotEmpty()
+  permissions: string
 }

@@ -17,7 +17,7 @@ export class Menu {
   pid: number
 
   @Column()
-  title: string
+  label: string
 
   @Column()
   icon: string

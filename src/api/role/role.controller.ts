@@ -26,17 +26,19 @@ export class RoleController {
     return this.roleService.findAll()
   }
 
+  @Get('/menu')
+  getMenu() {
+    return this.roleService.getMenu()
+  }
+
   @Get(':id')
   findOne(@Param('id', new ParseIntPipe()) id: number) {
     return this.roleService.findById(id)
   }
 
-  @Patch(':id')
-  update(
-    @Param('id', new ParseIntPipe()) id: number,
-    @Body() updateRoleDto: UpdateRoleDto
-  ) {
-    return this.roleService.update(id, updateRoleDto)
+  @Patch()
+  update(@Body() updateRoleDto: UpdateRoleDto) {
+    return this.roleService.update(updateRoleDto)
   }
 
   @Delete(':id')
