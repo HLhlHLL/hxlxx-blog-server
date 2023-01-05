@@ -17,8 +17,6 @@ export interface IEnvConfig {
   DEFAULT_AVATAR_URL: string
 }
 
-const BASE_URL = 'http://localhost:3000'
-
 const config: IEnvConfig = {
   DATABASE_TYPE: 'mysql',
   MYSQL_USERNAME: 'root',
@@ -27,13 +25,13 @@ const config: IEnvConfig = {
   MYSQL_PORT: 3306,
   MYSQL_DATABASE_NAME: 'blog',
   TOKEN_SECRET: 'hxlxx-xxxx',
-  BASE_URL,
+  BASE_URL: 'http://localhost:3000',
   STATICE_DIRECTORY: join(__dirname, 'assets'),
   EMAIL_SERVER_HOST: 'smtp.exmail.qq.com',
   EMAIL_SERVER_PORT: 465,
   EMAIL_CLIENT_PASSWORD: 'Rw589TFn6oihZ4vu',
   ROOT_EMAIL: 'huanglei@hxlx33.wecom.work',
-  DEFAULT_AVATAR_URL: BASE_URL + '/assets/avatar/default_avatar.jpg'
+  DEFAULT_AVATAR_URL: 'imgbed.hxlxx.xyz/default_avatar.jpg'
 }
 
 export default config

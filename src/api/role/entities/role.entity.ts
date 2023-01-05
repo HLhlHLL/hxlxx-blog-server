@@ -22,8 +22,8 @@ export class Role {
   @UpdateDateColumn()
   updated_at: Date
 
-  @OneToOne(() => User, (user) => user.roles)
-  users: User[]
+  @OneToOne(() => User, (user) => user.role)
+  user: User
 
   @Column({
     type: 'json'

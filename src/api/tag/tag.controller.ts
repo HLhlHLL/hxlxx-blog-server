@@ -15,9 +15,13 @@ import { UpdateTagDto } from './dto/update-tag.dto'
 import { ParseIntPipe } from '@nestjs/common'
 import { QueryInfo } from 'src/libs/types'
 import { JwtAuthGuard } from 'src/libs/guard/jwt.guard'
+import { Menu } from 'src/libs/decorator/menu/menu.decorator'
+import { MenuGuard } from 'src/libs/guard/menu.guard'
 
 @Controller('tag')
+@Menu(9)
 @UseGuards(JwtAuthGuard)
+@UseGuards(MenuGuard)
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
@@ -27,11 +31,13 @@ export class TagController {
   }
 
   @Get()
+  @Menu(0)
   findAll(@Query() query?: QueryInfo) {
     return this.tagService.findAll(query)
   }
 
   @Get(':id')
+  @Menu(0)
   findById(@Param('id', new ParseIntPipe()) id: number) {
     return this.tagService.findById(id)
   }

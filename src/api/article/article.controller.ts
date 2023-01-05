@@ -21,9 +21,13 @@ import { CreateDraftDto } from './dto/create-draft.dto'
 import { QueryInfo, UpdateTopOrRec } from 'src/libs/types'
 import { UpdateArticleDto } from './dto/update-article.dto'
 import { UpdateDraftDto } from './dto/update-draft.dto'
+import { Menu } from 'src/libs/decorator/menu/menu.decorator'
+import { MenuGuard } from 'src/libs/guard/menu.guard'
 
 @Controller('article')
+@Menu(6)
 @UseGuards(JwtAuthGuard)
+@UseGuards(MenuGuard)
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
@@ -45,21 +49,25 @@ export class ArticleController {
   }
 
   @Get()
+  @Menu(0)
   findAll(@Query() query?: QueryInfo) {
     return this.articleService.findAll(query)
   }
 
   @Get('/published')
+  @Menu(0)
   findAllPublished(@Query() query?: QueryInfo) {
     return this.articleService.findAllPublished(query)
   }
 
   @Get('/draft')
+  @Menu(0)
   findAllDraft(@Query() query?: QueryInfo) {
     return this.articleService.findAllDraft(query)
   }
 
   @Get(':id')
+  @Menu(0)
   findById(@Param('id', new ParseIntPipe()) id: number) {
     return this.articleService.findById(id)
   }

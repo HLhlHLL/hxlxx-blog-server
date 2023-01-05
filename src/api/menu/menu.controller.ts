@@ -14,9 +14,13 @@ import { CreateMenuDto } from './dto/create-menu.dto'
 import { UpdateMenuDto } from './dto/update-menu.dto'
 import { JwtAuthGuard } from 'src/libs/guard/jwt.guard'
 import { UpdateVisible } from 'src/libs/types'
+import { Menu } from 'src/libs/decorator/menu/menu.decorator'
+import { MenuGuard } from 'src/libs/guard/menu.guard'
 
 @Controller('menu')
+@Menu(11)
 @UseGuards(JwtAuthGuard)
+@UseGuards(MenuGuard)
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
@@ -26,11 +30,13 @@ export class MenuController {
   }
 
   @Get()
+  @Menu(0)
   findAll() {
     return this.menuService.findAll()
   }
 
   @Get(':id')
+  @Menu(0)
   findById(@Param('id', new ParseIntPipe()) id: number) {
     return this.menuService.findById(id)
   }

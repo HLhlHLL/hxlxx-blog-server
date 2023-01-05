@@ -32,9 +32,9 @@ export class User {
   @UpdateDateColumn()
   updated_at: Date
 
-  @OneToOne(() => Role, (role) => role.users)
+  @OneToOne(() => Role, (role) => role.user)
   @JoinColumn({
     name: 'role_id'
   })
-  roles: Role[]
+  role: Role
 }

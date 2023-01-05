@@ -27,7 +27,7 @@ export class UserService {
     }
     const user = new User()
     const role = await this.manager.findOneBy(Role, { role_name: 'user' })
-    user.roles = [role]
+    user.role = role
     user.username = username
     user.email = email
     user.avatar_url = config.DEFAULT_AVATAR_URL

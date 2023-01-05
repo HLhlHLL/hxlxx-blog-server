@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module'
 import { RoleModule } from './api/role/role.module'
 import { UploadModule } from './upload/upload.module'
 import { MenuModule } from './api/menu/menu.module'
+import { GlobalJwtModule } from './jwt/jwt.module'
 import config from 'env.config'
 
 @Module({
@@ -36,6 +37,7 @@ import config from 'env.config'
     AuthModule,
     RoleModule,
     UploadModule,
+    GlobalJwtModule,
     MenuModule
   ],
   controllers: [AppController],
