@@ -24,24 +24,24 @@ import { MenuGuard } from 'src/libs/guard/menu.guard'
 @UseGuards(MenuGuard)
 export class TagController {
   constructor(private readonly tagService: TagService) {}
-
+  // 新建文章标签
   @Post()
   create(@Body() createTagDto: CreateTagDto) {
     return this.tagService.create(createTagDto)
   }
-
+  // 获取所有标签
   @Get()
   @Menu(0)
   findAll(@Query() query?: QueryInfo) {
     return this.tagService.findAll(query)
   }
-
+  // 获取某一个标签
   @Get(':id')
   @Menu(0)
   findById(@Param('id', new ParseIntPipe()) id: number) {
     return this.tagService.findById(id)
   }
-
+  // 更新某一个标签
   @Patch(':id')
   update(
     @Param('id', new ParseIntPipe()) id: number,
@@ -49,7 +49,7 @@ export class TagController {
   ) {
     return this.tagService.update(id, updateTagDto)
   }
-
+  // 删除某一个标签
   @Delete(':id')
   remove(@Param('id', new ParseIntPipe()) id: number) {
     return this.tagService.remove(id)

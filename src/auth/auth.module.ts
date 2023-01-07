@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common'
 import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
-import { UserModule } from '../api/user/user.module'
 import { AuthService } from './auth.service'
 import { JwtStrategy } from '../libs/strategies/jwt.strategy'
 import { LocalStrategy } from '../libs/strategies/local.strategy'
@@ -13,7 +12,6 @@ import config from 'env.config'
 
 @Module({
   imports: [
-    UserModule,
     PassportModule,
     JwtModule.register({
       secret: config.TOKEN_SECRET,

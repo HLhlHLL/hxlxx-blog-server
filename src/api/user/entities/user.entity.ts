@@ -17,7 +17,9 @@ export class User {
   @Column()
   username: string
 
-  @Column()
+  @Column({
+    select: false
+  })
   password: string
 
   @Column()
@@ -25,6 +27,15 @@ export class User {
 
   @Column()
   avatar_url: string
+
+  @Column()
+  status: boolean
+
+  @Column()
+  ip: string
+
+  @Column()
+  address: string
 
   @CreateDateColumn()
   created_at: Date

@@ -14,13 +14,14 @@ export class RoleService {
     @InjectEntityManager() private readonly manager: EntityManager
   ) {}
 
-  async create({ role_name }: CreateRoleDto) {
+  async create({ role_name, permission_menu }: CreateRoleDto) {
     const isExist = await this.roleRep.findOneBy({ role_name })
     if (isExist) {
       throwHttpException('The role is already exist', HttpStatus.BAD_REQUEST)
     }
     const role = new Role()
     role.role_name = role_name
+    role.permission_menu = permission_menu
     const res = await this.roleRep.save(role)
     return res
   }
@@ -44,6 +45,7 @@ export class RoleService {
   }
 
   async update(updateRoleDto: UpdateRoleDto) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, created_at, updated_at, ...role } = updateRoleDto
     const { affected } = await this.roleRep.update(id, role)
     if (affected > 0) {

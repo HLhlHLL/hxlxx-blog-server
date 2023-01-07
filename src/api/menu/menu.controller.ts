@@ -23,34 +23,34 @@ import { MenuGuard } from 'src/libs/guard/menu.guard'
 @UseGuards(MenuGuard)
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}
-
+  // 新建菜单
   @Post()
   create(@Body() createMenuDto: CreateMenuDto) {
     return this.menuService.create(createMenuDto)
   }
-
+  // 获取所有菜单
   @Get()
   @Menu(0)
   findAll() {
     return this.menuService.findAll()
   }
-
+  // 获取某一个菜单
   @Get(':id')
   @Menu(0)
   findById(@Param('id', new ParseIntPipe()) id: number) {
     return this.menuService.findById(id)
   }
-
+  // 更新某一个菜单
   @Patch()
   update(@Body() updateMenuDto: UpdateMenuDto) {
     return this.menuService.update(updateMenuDto)
   }
-
+  // 更新菜单显示状态
   @Patch('/visible')
   updateVisible(@Body() status: UpdateVisible) {
     return this.menuService.updateVisible(status)
   }
-
+  // 删除某一个菜单
   @Delete(':id')
   remove(@Param('id', new ParseIntPipe()) id: number) {
     return this.menuService.remove(id)

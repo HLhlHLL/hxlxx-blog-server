@@ -82,19 +82,7 @@ export class Article extends BaseEntity {
       .leftJoinAndSelect('article.tags', 'tag')
       .leftJoinAndSelect('article.category', 'category')
       .select([
-        'article.id',
-        'article.author_id',
-        'article.title',
-        'article.content',
-        'article.description',
-        'article.cover_url',
-        'article.article_type',
-        'article.status',
-        'article.top',
-        'article.recommend',
-        'article.privacy',
-        'article.created_at',
-        'article.updated_at',
+        'article',
         'tag.id',
         'tag.tag_name',
         'category.id',

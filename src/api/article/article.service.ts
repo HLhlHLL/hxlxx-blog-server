@@ -62,9 +62,9 @@ export class ArticleService {
     return { res, count }
   }
 
-  async findById(id: number) {
+  async findById(id: number, ip: string) {
     const res = await Article.findById(id)
-    return res
+    return { res, ip }
   }
 
   async update(id: number, article: UpdateArticleDto | UpdateDraftDto) {

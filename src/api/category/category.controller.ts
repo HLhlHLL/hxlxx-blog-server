@@ -22,24 +22,24 @@ import { UpdateCategoryDto } from './dto/update-category.dto'
 @UseGuards(MenuGuard)
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
-
+  // 新建文章分类
   @Post()
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoryService.create(createCategoryDto)
   }
-
+  // 获取所有分类
   @Get()
   @Menu(0)
   findAll() {
     return this.categoryService.findAll()
   }
-
+  // 获取某一个分类
   @Get(':id')
   @Menu(0)
   findById(@Param('id', new ParseIntPipe()) id: number) {
     return this.categoryService.findById(id)
   }
-
+  // 更新某一个分类
   @Patch(':id')
   update(
     @Param('id', new ParseIntPipe()) id: number,
@@ -47,7 +47,7 @@ export class CategoryController {
   ) {
     return this.categoryService.update(id, updateCategoryDto)
   }
-
+  // 删除某一个分类
   @Delete(':id')
   remove(@Param('id', new ParseIntPipe()) id: number) {
     return this.categoryService.remove(id)

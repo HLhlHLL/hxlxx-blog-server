@@ -15,7 +15,10 @@ export class UserService {
     @InjectEntityManager() private readonly manager: EntityManager
   ) {}
 
-  async register({ username, password, email, code }: CreateUserDto) {
+  async register(
+    { username, password, email, code }: CreateUserDto,
+    ip: string
+  ) {
     const isExistUser = await this.userRep.findOneBy({ username })
     if (isExistUser) {
       return {
@@ -30,9 +33,11 @@ export class UserService {
     user.role = role
     user.username = username
     user.email = email
+    user.ip = ip
     user.avatar_url = config.DEFAULT_AVATAR_URL
     password = hashSync(password, 10)
     user.password = password
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...res } = await this.userRep.save(user)
     return res
   }
@@ -40,14 +45,8 @@ export class UserService {
   async findAll() {
     const [res, count] = await this.userRep
       .createQueryBuilder('user')
-      .innerJoinAndSelect('user.roles', 'role')
-      .select([
-        'user.id',
-        'user.username',
-        'user.email',
-        'role.id',
-        'role.role_name'
-      ])
+      .innerJoinAndSelect('user.role', 'role')
+      .select(['user', 'role.role_name'])
       .getManyAndCount()
     return { res, count }
   }
@@ -55,14 +54,8 @@ export class UserService {
   async findById(id: number) {
     const res = await this.userRep
       .createQueryBuilder('user')
-      .innerJoinAndSelect('user.roles', 'role')
-      .select([
-        'user.id',
-        'user.username',
-        'user.email',
-        'role.id',
-        'role.role_name'
-      ])
+      .innerJoinAndSelect('user.role', 'role')
+      .select(['user', 'role.role_name'])
       .where({ id })
       .getOne()
     return res

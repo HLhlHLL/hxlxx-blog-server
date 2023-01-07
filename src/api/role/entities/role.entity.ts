@@ -28,5 +28,5 @@ export class Role {
   @Column({
     type: 'json'
   })
-  permission_menu: string
+  permission_menu: number[]
 }

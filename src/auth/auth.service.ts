@@ -1,48 +1,47 @@
 import { HttpStatus, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { UserService } from 'src/api/user/user.service'
 import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer'
 import { throwHttpException } from 'src/libs/utils'
 import { compareSync } from 'bcryptjs'
 import * as dayjs from 'dayjs'
 import { InjectEntityManager } from '@nestjs/typeorm'
 import { EntityManager } from 'typeorm'
+import { User } from 'src/api/user/entities/user.entity'
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectEntityManager() private readonly manager: EntityManager,
-    private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {
-    const user = await this.userService.findByUserName(username)
+    const user = await this.manager
+      .createQueryBuilder(User, 'user')
+      .addSelect(['user.password'])
+      .where('user.username = :username', { username })
+      .getOne()
     if (user) {
-      const isUserExist = compareSync(password, user.password)
-      if (isUserExist) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { password, ...result } = user
-        return result
-      } else {
-        throwHttpException('The password is wrong!!', HttpStatus.BAD_REQUEST)
-      }
+      return compareSync(password, user.password)
+        ? true
+        : throwHttpException('The password is wrong!!', HttpStatus.BAD_REQUEST)
     } else {
-      throwHttpException(
-        'The user is not exist or the username is wrong!!',
-        HttpStatus.BAD_REQUEST
-      )
+      throwHttpException('The user is not exist!!', HttpStatus.BAD_REQUEST)
     }
   }
 
   async login(info, captcha: string, ip: string) {
     const { username, code } = info
     if (code?.toLowerCase() === captcha.toLowerCase()) {
+      const user = await this.manager
+        .createQueryBuilder(User, 'user')
+        .where('user.username = :username', { username })
+        .getOne()
       const payload = { username, sub: code }
       return {
-        access_token: 'Bearer ' + this.jwtService.sign(payload),
-        ip
+        token: 'Bearer ' + this.jwtService.sign(payload),
+        user
       }
     } else {
       throwHttpException('The captcha code is wrong', HttpStatus.BAD_REQUEST)
