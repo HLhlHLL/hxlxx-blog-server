@@ -6,8 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  UseInterceptors,
-  UploadedFile,
   Query,
   UseGuards,
   Req
@@ -15,8 +13,6 @@ import {
 import { ArticleService } from './article.service'
 import { JwtAuthGuard } from 'src/libs/guard/jwt.guard'
 import { ParseIntPipe } from '@nestjs/common'
-import { FileInterceptor } from '@nestjs/platform-express'
-import config from 'env.config'
 import { CreateArticleDto } from './dto/create-article.dto'
 import { CreateDraftDto } from './dto/create-draft.dto'
 import { QueryInfo, UpdateTopOrRec } from 'src/libs/types'
@@ -41,13 +37,6 @@ export class ArticleController {
   @Post('/draft')
   createDraft(@Body() draft: CreateDraftDto) {
     return this.articleService.create(draft)
-  }
-  // 上传封面 ---- 已弃用
-  @Post('/cover')
-  @UseInterceptors(FileInterceptor('file'))
-  uploadCover(@UploadedFile() file: Express.Multer.File) {
-    const cover_url = `${config.BASE_URL}/assets/article_cover/${file.filename}`
-    return cover_url
   }
   // 查询所有文章
   @Get()

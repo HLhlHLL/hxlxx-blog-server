@@ -16,16 +16,24 @@ export class Menu {
   })
   pid: number
 
-  @Column()
+  @Column({
+    default: ''
+  })
   label: string
 
-  @Column()
+  @Column({
+    default: ''
+  })
   icon: string
 
-  @Column()
+  @Column({
+    default: ''
+  })
   path: string
 
-  @Column()
+  @Column({
+    default: true
+  })
   visible: boolean
 
   @CreateDateColumn()

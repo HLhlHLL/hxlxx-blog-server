@@ -26,4 +26,8 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   password: string
 
   auth_token?: string
+
+  role_id: number
+
+  status: boolean
 }

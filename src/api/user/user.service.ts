@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common'
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm'
 import { EntityManager, Repository } from 'typeorm'
 import { CreateUserDto } from './dto/create-user.dto'
@@ -17,7 +17,8 @@ export class UserService {
 
   async register(
     { username, password, email, code }: CreateUserDto,
-    ip: string
+    ip: string,
+    emailCode: string
   ) {
     const isExistUser = await this.userRep.findOneBy({ username })
     if (isExistUser) {
@@ -25,7 +26,7 @@ export class UserService {
         message: 'The username is already exist!!'
       }
     }
-    if (global.EMAIL_CODE !== code) {
+    if (emailCode !== code) {
       throwHttpException('The code is wrong!!', HttpStatus.BAD_REQUEST)
     }
     const user = new User()
@@ -46,7 +47,7 @@ export class UserService {
     const [res, count] = await this.userRep
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.role', 'role')
-      .select(['user', 'role.role_name'])
+      .select(['user', 'role.id', 'role.role_name'])
       .getManyAndCount()
     return { res, count }
   }
@@ -64,6 +65,26 @@ export class UserService {
   async findByUserName(username: string) {
     const res = await this.userRep.findOneBy({ username })
     return res
+  }
+
+  async updateUserRole({ id, role_id }) {
+    const role = await this.manager.findOneBy(Role, { id: role_id })
+    const user = await this.userRep.findOneBy({ id })
+    user.role = role
+    await this.userRep.save(user)
+    return 'Update user successfully'
+  }
+
+  async updateUserStatus({ id, status }) {
+    const { affected } = await this.userRep.update(id, { status })
+    if (affected > 0) {
+      return 'Update user status successfully'
+    } else {
+      throw new HttpException(
+        'Update failed, please check the parameter',
+        HttpStatus.BAD_REQUEST
+      )
+    }
   }
 
   async resetUsername({ id, username }) {

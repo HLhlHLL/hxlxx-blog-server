@@ -1,15 +1,18 @@
 import { HttpStatus, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer'
-import { throwHttpException } from 'src/libs/utils'
+import { isValidDate, throwHttpException } from 'src/libs/utils'
 import { compareSync } from 'bcryptjs'
 import * as dayjs from 'dayjs'
 import { InjectEntityManager } from '@nestjs/typeorm'
 import { EntityManager } from 'typeorm'
 import { User } from 'src/api/user/entities/user.entity'
+import { Site } from './entities/site.entity'
 
 @Injectable()
 export class AuthService {
+  private readonly LOGGED_TIME_OFFSET: number = 60 * 60 * 6 * 1000
+
   constructor(
     @InjectEntityManager() private readonly manager: EntityManager,
     private readonly jwtService: JwtService,
@@ -31,13 +34,35 @@ export class AuthService {
     }
   }
 
-  async login(info, captcha: string, ip: string) {
+  async login(info: any, captcha: string, ip: string) {
     const { username, code } = info
     if (code?.toLowerCase() === captcha.toLowerCase()) {
-      const user = await this.manager
-        .createQueryBuilder(User, 'user')
-        .where('user.username = :username', { username })
-        .getOne()
+      const user = await this.manager.findOneBy(User, { username })
+      user.logged_ip = ip
+      if (isValidDate(user.logged_at)) {
+        // 用户上次登陆过，判断上次登录间隔，大于6小时重新记录
+        const lastTime = new Date(user.logged_at).getTime()
+        const currentTime = new Date().getTime()
+        if (currentTime - this.LOGGED_TIME_OFFSET > lastTime) {
+          user.logged_at = new Date()
+          // 更新访问量
+          const site = (await this.manager.find(Site))[0]
+          site.view_times++
+          await this.manager.save(site)
+        }
+      } else {
+        user.logged_at = new Date()
+        const site = (await this.manager.find(Site))[0]
+        site.view_times++
+        await this.manager.save(site)
+      }
+      await this.manager.save(user)
+      if (!user.status) {
+        throwHttpException(
+          'The user has been forbidden',
+          HttpStatus.I_AM_A_TEAPOT
+        )
+      }
       const payload = { username, sub: code }
       return {
         token: 'Bearer ' + this.jwtService.sign(payload),
@@ -48,9 +73,7 @@ export class AuthService {
     }
   }
 
-  async sendEmailCode(info) {
-    const code = Math.random().toString().slice(-6)
-    global.EMAIL_CODE = code
+  async sendEmailCode(code: string, info: any) {
     const date = dayjs(new Date()).format('YYYY年MM月DD日 HH:mm:ss')
     const sendMailOptions: ISendMailOptions = {
       to: info.email,
@@ -70,6 +93,6 @@ export class AuthService {
       // ]
     }
     await this.mailerService.sendMail(sendMailOptions)
-    return { message: '发送成功' }
+    return { message: '验证码已发送到邮箱，请尽快使用！' }
   }
 }

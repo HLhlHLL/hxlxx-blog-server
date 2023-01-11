@@ -41,7 +41,9 @@ export class AuthController {
   }
   // 获取注册验证码
   @Post('/code')
-  sendEmailCode(@Body() info) {
-    return this.authService.sendEmailCode(info)
+  sendEmailCode(@Body() info, @Session() session) {
+    const code = Math.random().toString().slice(-6)
+    session.emailCode = code
+    return this.authService.sendEmailCode(code, info)
   }
 }

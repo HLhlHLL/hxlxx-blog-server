@@ -40,4 +40,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   @Length(6, 6)
   code: string
+
+  status: boolean
 }

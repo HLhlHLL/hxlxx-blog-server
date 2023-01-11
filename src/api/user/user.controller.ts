@@ -8,41 +8,62 @@ import {
   Delete,
   ParseIntPipe,
   UseGuards,
-  UseInterceptors,
-  UploadedFile,
-  Req
+  Req,
+  Session
 } from '@nestjs/common'
 import { UserService } from './user.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { JwtAuthGuard } from 'src/libs/guard/jwt.guard'
-import { FileInterceptor } from '@nestjs/platform-express'
-import config from 'env.config'
 import { Request } from 'express'
+import { Menu } from 'src/libs/decorator/menu/menu.decorator'
+import { MenuGuard } from 'src/libs/guard/menu.guard'
 
 @Controller('user')
+@Menu(10)
+@UseGuards(MenuGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
   //注册
   @Post('/register')
-  register(@Body() createUserDto: CreateUserDto, @Req() req: Request) {
+  @Menu(0)
+  register(
+    @Body() createUserDto: CreateUserDto,
+    @Req() req: Request,
+    @Session() session
+  ) {
     const ip = req.clientIp
-    return this.userService.register(createUserDto, ip)
+    const emailCode = session.emailCode
+    return this.userService.register(createUserDto, ip, emailCode)
   }
   // 获取所有用户
   @Get()
+  @Menu(0)
   @UseGuards(JwtAuthGuard)
   findAll() {
     return this.userService.findAll()
   }
   // 获取某个用户
   @Get(':id')
+  @Menu(0)
   @UseGuards(JwtAuthGuard)
   findOne(@Param('id', new ParseIntPipe()) id: number) {
     return this.userService.findById(id)
   }
+  // 更新用户角色
+  @Patch('/role')
+  @UseGuards(JwtAuthGuard)
+  updateUserRole(@Body() user: UpdateUserDto) {
+    return this.userService.updateUserRole(user)
+  }
+  // 更新用户状态
+  @Patch('/status')
+  @UseGuards(JwtAuthGuard)
+  updateUserStatus(@Body() user: UpdateUserDto) {
+    return this.userService.updateUserStatus(user)
+  }
   // 重置用户名
-  @Patch('/reset_name')
+  @Patch('/username')
   @UseGuards(JwtAuthGuard)
   resetUsername(@Body() user: UpdateUserDto) {
     return this.userService.resetUsername(user)
@@ -54,22 +75,12 @@ export class UserController {
     return this.userService.authentication(user)
   }
   // 重置密码
-  @Patch('/reset_pwd')
+  @Patch('/password')
   @UseGuards(JwtAuthGuard)
   resetPassword(@Body() user: UpdateUserDto) {
     return this.userService.resetPassword(user)
   }
   // 修改头像
-  @Patch('/reset_avatar')
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('avatar'))
-  resetAvatar(
-    @Body('id', new ParseIntPipe()) id: number,
-    @UploadedFile() file: Express.Multer.File
-  ) {
-    const avatar_url = `${config.BASE_URL}/assets/avatar/${file.filename}`
-    return this.userService.resetAvatar(id, avatar_url)
-  }
   // 删除用户
   @Delete(':id')
   @UseGuards(JwtAuthGuard)

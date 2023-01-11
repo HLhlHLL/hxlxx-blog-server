@@ -32,7 +32,7 @@ export class MenuGuard implements CanActivate {
     const { role } = await this.manager
       .createQueryBuilder(User, 'user')
       .leftJoinAndSelect('user.role', 'role')
-      .select(['user.username', 'role.permission_menu'])
+      .select(['user.username', 'role.role_name', 'role.permission_menu'])
       .where('user.username = :username', { username })
       .getOne()
     if (role.role_name === 'admin') return true

@@ -31,7 +31,7 @@ const config: IEnvConfig = {
   EMAIL_SERVER_PORT: 465,
   EMAIL_CLIENT_PASSWORD: 'Rw589TFn6oihZ4vu',
   ROOT_EMAIL: 'huanglei@hxlx33.wecom.work',
-  DEFAULT_AVATAR_URL: 'imgbed.hxlxx.xyz/default_avatar.jpg'
+  DEFAULT_AVATAR_URL: 'https://imgbed.hxlxx.xyz/default_avatar.jpg'
 }
 
 export default config

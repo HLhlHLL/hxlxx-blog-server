@@ -43,3 +43,7 @@ export const fileWriter = (path: string, data: Buffer) => {
   })
   fw.write(data)
 }
+
+export const isValidDate = (date: Date) => {
+  return date instanceof Date && !Number.isNaN(date.getTime())
+}

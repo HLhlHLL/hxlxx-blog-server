@@ -3,7 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
@@ -13,7 +13,9 @@ export class Role {
   @PrimaryGeneratedColumn('increment')
   id: number
 
-  @Column()
+  @Column({
+    default: ''
+  })
   role_name: string
 
   @CreateDateColumn()
@@ -22,11 +24,11 @@ export class Role {
   @UpdateDateColumn()
   updated_at: Date
 
-  @OneToOne(() => User, (user) => user.role)
-  user: User
+  @OneToMany(() => User, (user) => user.role)
+  user: User[]
 
   @Column({
-    type: 'json'
+    type: 'simple-array'
   })
   permission_menu: number[]
 }

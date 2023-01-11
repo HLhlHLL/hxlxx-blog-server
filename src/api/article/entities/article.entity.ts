@@ -19,7 +19,9 @@ export class Article extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number
 
-  @Column()
+  @Column({
+    default: ''
+  })
   title: string
 
   @Column({
@@ -27,10 +29,14 @@ export class Article extends BaseEntity {
   })
   content: string
 
-  @Column()
+  @Column({
+    default: ''
+  })
   description: string
 
-  @Column()
+  @Column({
+    default: ''
+  })
   cover_url: string
 
   @CreateDateColumn()
@@ -39,22 +45,34 @@ export class Article extends BaseEntity {
   @UpdateDateColumn()
   updated_at: Date
 
-  @Column()
+  @Column({
+    default: ''
+  })
   article_type: string
 
-  @Column()
+  @Column({
+    default: true
+  })
   status: boolean
 
-  @Column()
+  @Column({
+    default: false
+  })
   top: boolean
 
-  @Column()
+  @Column({
+    default: false
+  })
   recommend: boolean
 
-  @Column()
+  @Column({
+    default: false
+  })
   privacy: boolean
 
-  @Column()
+  @Column({
+    default: 0
+  })
   author_id: number
 
   @ManyToMany(() => Tag, (tag) => tag.tag_name)

@@ -13,7 +13,9 @@ export class Tag {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column()
+  @Column({
+    default: ''
+  })
   tag_name: string
 
   @CreateDateColumn()

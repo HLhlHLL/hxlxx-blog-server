@@ -13,7 +13,9 @@ export class Category {
   @PrimaryGeneratedColumn('increment')
   id: number
 
-  @Column()
+  @Column({
+    default: ''
+  })
   category_name: string
 
   @CreateDateColumn()

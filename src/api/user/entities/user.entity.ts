@@ -5,8 +5,8 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToOne,
-  JoinColumn
+  JoinColumn,
+  ManyToOne
 } from 'typeorm'
 
 @Entity()
@@ -14,7 +14,9 @@ export class User {
   @PrimaryGeneratedColumn('increment')
   id: number
 
-  @Column()
+  @Column({
+    default: ''
+  })
   username: string
 
   @Column({
@@ -22,19 +24,39 @@ export class User {
   })
   password: string
 
-  @Column()
+  @Column({
+    default: ''
+  })
   email: string
 
-  @Column()
+  @Column({
+    default: ''
+  })
   avatar_url: string
 
-  @Column()
+  @Column({
+    default: true
+  })
   status: boolean
 
-  @Column()
+  @Column({
+    default: ''
+  })
   ip: string
 
-  @Column()
+  @Column({
+    default: ''
+  })
+  logged_ip: string
+
+  @Column({
+    default: null
+  })
+  logged_at: Date
+
+  @Column({
+    default: ''
+  })
   address: string
 
   @CreateDateColumn()
@@ -43,9 +65,10 @@ export class User {
   @UpdateDateColumn()
   updated_at: Date
 
-  @OneToOne(() => Role, (role) => role.user)
+  @ManyToOne(() => Role, (role) => role.user)
   @JoinColumn({
-    name: 'role_id'
+    name: 'role_id',
+    referencedColumnName: 'id'
   })
   role: Role
 }
