@@ -17,7 +17,6 @@ export class UserService {
 
   async register(
     { username, password, email, code }: CreateUserDto,
-    ip: string,
     emailCode: string
   ) {
     const isExistUser = await this.userRep.findOneBy({ username })
@@ -34,7 +33,6 @@ export class UserService {
     user.role = role
     user.username = username
     user.email = email
-    user.ip = ip
     user.avatar_url = config.DEFAULT_AVATAR_URL
     password = hashSync(password, 10)
     user.password = password

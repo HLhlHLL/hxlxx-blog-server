@@ -8,6 +8,8 @@ import { InjectEntityManager } from '@nestjs/typeorm'
 import { EntityManager } from 'typeorm'
 import { User } from 'src/api/user/entities/user.entity'
 import { Site } from './entities/site.entity'
+import axios from 'axios'
+import config from 'env.config'
 
 @Injectable()
 export class AuthService {
@@ -38,7 +40,10 @@ export class AuthService {
     const { username, code } = info
     if (code?.toLowerCase() === captcha.toLowerCase()) {
       const user = await this.manager.findOneBy(User, { username })
-      user.logged_ip = ip
+      user.logged_ip = user.ip
+      user.ip = ip
+      const { data } = await axios.get(config.QUERY_IP_BASEURL(ip))
+      user.address = data[0]?.location || ''
       if (isValidDate(user.logged_at)) {
         // 用户上次登陆过，判断上次登录间隔，大于6小时重新记录
         const lastTime = new Date(user.logged_at).getTime()

@@ -64,7 +64,7 @@ export class ArticleService {
 
   async findById(id: number, ip: string) {
     const res = await Article.findById(id)
-    return { res, ip }
+    return { res, ip: ip.replace('::ffff:', '') }
   }
 
   async update(id: number, article: UpdateArticleDto | UpdateDraftDto) {

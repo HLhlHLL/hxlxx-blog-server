@@ -8,14 +8,12 @@ import {
   Delete,
   ParseIntPipe,
   UseGuards,
-  Req,
   Session
 } from '@nestjs/common'
 import { UserService } from './user.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { JwtAuthGuard } from 'src/libs/guard/jwt.guard'
-import { Request } from 'express'
 import { Menu } from 'src/libs/decorator/menu/menu.decorator'
 import { MenuGuard } from 'src/libs/guard/menu.guard'
 
@@ -27,14 +25,9 @@ export class UserController {
   //注册
   @Post('/register')
   @Menu(0)
-  register(
-    @Body() createUserDto: CreateUserDto,
-    @Req() req: Request,
-    @Session() session
-  ) {
-    const ip = req.clientIp
+  register(@Body() createUserDto: CreateUserDto, @Session() session) {
     const emailCode = session.emailCode
-    return this.userService.register(createUserDto, ip, emailCode)
+    return this.userService.register(createUserDto, emailCode)
   }
   // 获取所有用户
   @Get()

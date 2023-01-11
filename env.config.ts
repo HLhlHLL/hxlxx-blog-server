@@ -15,6 +15,7 @@ export interface IEnvConfig {
   EMAIL_CLIENT_PASSWORD: string
   ROOT_EMAIL: string
   DEFAULT_AVATAR_URL: string
+  QUERY_IP_BASEURL: (ip: string) => string
 }
 
 const config: IEnvConfig = {
@@ -31,7 +32,9 @@ const config: IEnvConfig = {
   EMAIL_SERVER_PORT: 465,
   EMAIL_CLIENT_PASSWORD: 'Rw589TFn6oihZ4vu',
   ROOT_EMAIL: 'huanglei@hxlx33.wecom.work',
-  DEFAULT_AVATAR_URL: 'https://imgbed.hxlxx.xyz/default_avatar.jpg'
+  DEFAULT_AVATAR_URL: 'https://imgbed.hxlxx.xyz/default_avatar.jpg',
+  QUERY_IP_BASEURL: (ip: string) =>
+    `http://opendata.baidu.com/api.php?query=${ip}&co=&resource_id=6006&oe=utf8`
 }
 
 export default config

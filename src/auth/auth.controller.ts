@@ -20,7 +20,11 @@ export class AuthController {
   @Post('/login')
   @UseGuards(LocalAuthGuard)
   login(@Body() info, @Session() session, @Req() req: Request) {
-    return this.authService.login(info, session.captcha || '', req.clientIp)
+    return this.authService.login(
+      info,
+      session.captcha || '',
+      req.clientIp.replace('::ffff:', '')
+    )
   }
   // 获取登录验证码
   @Get('/captcha')

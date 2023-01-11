@@ -24,17 +24,18 @@ import { Request } from 'express'
 
 @Controller('article')
 @Menu(6)
-@UseGuards(JwtAuthGuard)
 @UseGuards(MenuGuard)
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
   // 新建文章
   @Post()
+  @UseGuards(JwtAuthGuard)
   create(@Body() article: CreateArticleDto) {
     return this.articleService.create(article)
   }
   // 新建草稿
   @Post('/draft')
+  @UseGuards(JwtAuthGuard)
   createDraft(@Body() draft: CreateDraftDto) {
     return this.articleService.create(draft)
   }
@@ -64,26 +65,31 @@ export class ArticleController {
   }
   // 更新文章
   @Patch()
+  @UseGuards(JwtAuthGuard)
   update(@Body() article: UpdateArticleDto) {
     return this.articleService.update(article.id, article)
   }
   // 更新草稿
   @Patch('/draft')
+  @UseGuards(JwtAuthGuard)
   updateDraft(@Body() article: UpdateDraftDto) {
     return this.articleService.update(article.id, article)
   }
   // 更新置顶状态
   @Patch('/top')
+  @UseGuards(JwtAuthGuard)
   updateTop(@Body() status: UpdateTopOrRec) {
     return this.articleService.updateTop(status)
   }
   // 更新推荐状态
   @Patch('/recommend')
+  @UseGuards(JwtAuthGuard)
   updateRecommend(@Body() status: UpdateTopOrRec) {
     return this.articleService.updateRecommend(status)
   }
   // 删除某一篇文章
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id', new ParseIntPipe()) id: number) {
     return this.articleService.remove(id)
   }
