@@ -40,28 +40,28 @@ export class ArticleController {
     return this.articleService.create(draft)
   }
   // 查询所有文章
-  @Get()
+  @Get('/search')
   @Menu(0)
-  findAll(@Query() query?: QueryInfo) {
-    return this.articleService.findAll(query)
+  findAll(@Query() query: QueryInfo) {
+    return this.articleService.searchArticle(query)
   }
   // 查询已发布的文章
   @Get('/published')
   @Menu(0)
-  findAllPublished(@Query() query?: QueryInfo) {
+  findAllPublished(@Query() query: QueryInfo) {
     return this.articleService.findAllPublished(query)
   }
   // 查询草稿
   @Get('/draft')
   @Menu(0)
-  findAllDraft(@Query() query?: QueryInfo) {
+  findAllDraft(@Query() query: QueryInfo) {
     return this.articleService.findAllDraft(query)
   }
   // 获取某一篇文章
   @Get(':id')
   @Menu(0)
   findById(@Param('id', new ParseIntPipe()) id: number, @Req() req: Request) {
-    return this.articleService.findById(id, req.clientIp)
+    return this.articleService.findById(id, req.clientIp.replace('::ffff:', ''))
   }
   // 更新文章
   @Patch()

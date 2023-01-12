@@ -14,6 +14,12 @@ import {
 import { Category } from '../../category/entities/category.entity'
 import { QueryInfo } from 'src/libs/types'
 
+export enum ARTICLE_TYPE {
+  ORIGINAL = 'original',
+  REPRODUCE = 'reproduce',
+  TRANSLATION = 'translation'
+}
+
 @Entity()
 export class Article extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
@@ -46,9 +52,16 @@ export class Article extends BaseEntity {
   updated_at: Date
 
   @Column({
-    default: ''
+    type: 'enum',
+    enum: ARTICLE_TYPE,
+    default: ARTICLE_TYPE.ORIGINAL
   })
-  article_type: string
+  article_type: ARTICLE_TYPE
+
+  @Column({
+    default: 0
+  })
+  view_times: number
 
   @Column({
     default: true
@@ -108,12 +121,24 @@ export class Article extends BaseEntity {
       ])
   }
 
-  static findAll(status?: number, query?: QueryInfo) {
-    const condition = status >= 0 ? `article.status = ${status}` : ''
+  static findAll(query: QueryInfo, status?: number) {
     const skip = query.skip ? parseInt(query.skip) : undefined
     const limit = query.limit ? parseInt(query.limit) : undefined
     return this.getQueryBuilder()
-      .where(condition)
+      .where('article.status = :status', { status })
+      .orderBy('article.id', 'DESC')
+      .skip(skip)
+      .take(limit)
+      .getMany()
+  }
+
+  static searchArticle(query: QueryInfo) {
+    const skip = query.skip ? parseInt(query.skip) : undefined
+    const limit = query.limit ? parseInt(query.limit) : undefined
+    return this.getQueryBuilder()
+      .where('article.title like :keyword', {
+        keyword: `%${query.keyword || ''}%`
+      })
       .orderBy('article.id', 'DESC')
       .skip(skip)
       .take(limit)

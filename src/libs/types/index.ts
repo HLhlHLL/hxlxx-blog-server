@@ -1,6 +1,7 @@
 export type QueryInfo = {
   skip?: string
   limit?: string
+  keyword?: string
 }
 
 export type UpdateTopOrRec = {

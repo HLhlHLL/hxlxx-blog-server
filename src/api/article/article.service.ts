@@ -36,35 +36,35 @@ export class ArticleService {
     return article
   }
 
-  async findAll(query?: QueryInfo) {
-    const res = await Article.findAll(undefined, query)
-    const count = await this.articleRep.count()
+  async searchArticle(query?: QueryInfo) {
+    const res = await Article.searchArticle(query)
+    const count = await this.articleRep
+      .createQueryBuilder()
+      .where('article.title like :keyword', {
+        keyword: `%${query.keyword || ''}%`
+      })
+      .getCount()
     return { res, count }
   }
 
   async findAllPublished(query?: QueryInfo) {
-    const res = await Article.findAll(1, query)
-    const count = await this.articleRep
-      .createQueryBuilder()
-      .select()
-      .where('status = 1')
-      .getCount()
+    const res = await Article.findAll(query, 1)
+    const count = await this.articleRep.countBy({ status: true })
     return { res, count }
   }
 
   async findAllDraft(query?: QueryInfo) {
-    const res = await Article.findAll(0, query)
-    const count = await this.articleRep
-      .createQueryBuilder()
-      .select()
-      .where('status = 0')
-      .getCount()
+    const res = await Article.findAll(query, 0)
+    const count = await this.articleRep.countBy({ status: false })
     return { res, count }
   }
 
   async findById(id: number, ip: string) {
     const res = await Article.findById(id)
-    return { res, ip: ip.replace('::ffff:', '') }
+    if (ip !== '127.0.0.1') {
+      await this.articleRep.update(id, { view_times: res.view_times + 1 })
+    }
+    return { res, ip }
   }
 
   async update(id: number, article: UpdateArticleDto | UpdateDraftDto) {

@@ -7,6 +7,7 @@ import {
   IsNumber,
   IsString
 } from 'class-validator'
+import { ARTICLE_TYPE } from '../entities/article.entity'
 
 export class CreateArticleDto {
   @IsDefined()
@@ -27,7 +28,7 @@ export class CreateArticleDto {
   @IsDefined()
   @IsNotEmpty()
   @IsString()
-  article_type: string
+  article_type: ARTICLE_TYPE
 
   @IsDefined()
   @IsNotEmpty()
