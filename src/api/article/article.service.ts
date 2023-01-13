@@ -97,10 +97,10 @@ export class ArticleService {
         category && (article.category = category)
       }
       await this.articleRep.save(article)
-      return 'Update article successfully'
+      return '更新文章成功！'
     } else {
       throw new HttpException(
-        'Update failed, please check the parameter',
+        '参数错误，更新文章失败！',
         HttpStatus.BAD_REQUEST
       )
     }
@@ -114,10 +114,10 @@ export class ArticleService {
       .where('id = :id', { id: status.id })
       .execute()
     if (affected > 0) {
-      return 'Update article top successfully'
+      return '更新文章置顶状态成功！'
     } else {
       throwHttpException(
-        'Update failed, please check the parameter',
+        '参数错误，更新文章置顶状态失败！',
         HttpStatus.BAD_REQUEST
       )
     }
@@ -131,17 +131,18 @@ export class ArticleService {
       .where('id = :id', { id: status.id })
       .execute()
     if (affected > 0) {
-      return 'Update article recommend successfully'
+      return '更新文章推荐状态成功！'
     } else {
-      throwHttpException(
-        'Update failed, please check the parameter',
-        HttpStatus.BAD_REQUEST
-      )
+      throwHttpException('参数错误，更新文章推荐失败！', HttpStatus.BAD_REQUEST)
     }
   }
 
   async remove(id: number) {
-    await this.articleRep.delete(id)
-    return 'delete article successfully'
+    const { affected } = await this.articleRep.delete(id)
+    if (affected > 0) {
+      return '删除文章成功！'
+    } else {
+      throwHttpException('参数错误，删除文章失败！', HttpStatus.BAD_REQUEST)
+    }
   }
 }

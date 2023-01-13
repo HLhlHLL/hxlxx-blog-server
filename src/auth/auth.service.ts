@@ -7,7 +7,7 @@ import * as dayjs from 'dayjs'
 import { InjectEntityManager } from '@nestjs/typeorm'
 import { EntityManager } from 'typeorm'
 import { User } from 'src/api/user/entities/user.entity'
-import { Site } from './entities/site.entity'
+import { Site } from '../api/site/entities/site.entity'
 import axios from 'axios'
 import config from 'env.config'
 
@@ -30,9 +30,9 @@ export class AuthService {
     if (user) {
       return compareSync(password, user.password)
         ? true
-        : throwHttpException('The password is wrong!!', HttpStatus.BAD_REQUEST)
+        : throwHttpException('密码错误！', HttpStatus.BAD_REQUEST)
     } else {
-      throwHttpException('The user is not exist!!', HttpStatus.BAD_REQUEST)
+      throwHttpException('用户不存在！', HttpStatus.BAD_REQUEST)
     }
   }
 
@@ -63,10 +63,7 @@ export class AuthService {
       }
       await this.manager.save(user)
       if (!user.status) {
-        throwHttpException(
-          'The user has been forbidden',
-          HttpStatus.I_AM_A_TEAPOT
-        )
+        throwHttpException('该用户已被禁用！', HttpStatus.I_AM_A_TEAPOT)
       }
       const payload = { username, sub: code }
       return {
@@ -74,7 +71,7 @@ export class AuthService {
         user
       }
     } else {
-      throwHttpException('The captcha code is wrong', HttpStatus.BAD_REQUEST)
+      throwHttpException('验证码错误！', HttpStatus.BAD_REQUEST)
     }
   }
 

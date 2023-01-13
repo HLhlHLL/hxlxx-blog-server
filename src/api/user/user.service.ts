@@ -19,14 +19,12 @@ export class UserService {
     { username, password, email, code }: CreateUserDto,
     emailCode: string
   ) {
-    const isExistUser = await this.userRep.findOneBy({ username })
-    if (isExistUser) {
-      return {
-        message: 'The username is already exist!!'
-      }
+    const isExist = await this.userRep.findOneBy({ username })
+    if (isExist) {
+      throwHttpException('用户名已经存在！', HttpStatus.BAD_REQUEST)
     }
     if (emailCode !== code) {
-      throwHttpException('The code is wrong!!', HttpStatus.BAD_REQUEST)
+      throwHttpException('验证码错误！', HttpStatus.BAD_REQUEST)
     }
     const user = new User()
     const role = await this.manager.findOneBy(Role, { role_name: 'user' })
@@ -70,16 +68,16 @@ export class UserService {
     const user = await this.userRep.findOneBy({ id })
     user.role = role
     await this.userRep.save(user)
-    return 'Update user successfully'
+    return '更新用户角色成功！'
   }
 
   async updateUserStatus({ id, status }) {
     const { affected } = await this.userRep.update(id, { status })
     if (affected > 0) {
-      return 'Update user status successfully'
+      return '更新用户状态成功！'
     } else {
       throw new HttpException(
-        'Update failed, please check the parameter',
+        '参数错误，更新用户状态失败！',
         HttpStatus.BAD_REQUEST
       )
     }

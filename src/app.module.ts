@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common'
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod
+} from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { ArticleModule } from './api/article/article.module'
@@ -12,6 +17,9 @@ import { RoleModule } from './api/role/role.module'
 import { MenuModule } from './api/menu/menu.module'
 import { GlobalJwtModule } from './jwt/jwt.module'
 import config from 'env.config'
+import { OperationLoggerMiddleware } from './libs/middleware/operation-logger.middleware'
+import { SiteModule } from './api/site/site.module'
+import { OperationLoggerModule } from './api/operation-logger/operation-logger.module'
 
 @Module({
   imports: [
@@ -36,9 +44,27 @@ import config from 'env.config'
     AuthModule,
     RoleModule,
     GlobalJwtModule,
-    MenuModule
+    MenuModule,
+    SiteModule,
+    OperationLoggerModule
   ],
   controllers: [AppController],
   providers: [AppService]
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(OperationLoggerMiddleware)
+      .exclude(
+        {
+          path: '/user/register',
+          method: RequestMethod.POST
+        },
+        {
+          path: '/login',
+          method: RequestMethod.POST
+        }
+      )
+      .forRoutes({ path: '*', method: RequestMethod.ALL })
+  }
+}

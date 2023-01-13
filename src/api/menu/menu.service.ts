@@ -13,6 +13,10 @@ export class MenuService {
     @InjectRepository(Menu) private readonly menuRep: Repository<Menu>
   ) {}
   async create(createMenuDto: CreateMenuDto) {
+    const isExist = await this.menuRep.findOneBy({ label: createMenuDto.label })
+    if (isExist) {
+      throwHttpException('菜单已经存在，请勿重复添加！', HttpStatus.BAD_REQUEST)
+    }
     const menu = new Menu()
     Object.assign(menu, createMenuDto)
     const res = await this.menuRep.save(menu)
@@ -35,12 +39,9 @@ export class MenuService {
       updateMenuDto
     )
     if (affected > 0) {
-      return 'update menu successfully'
+      return '更新菜单成功！'
     } else {
-      throwHttpException(
-        'Update failed, please check the parameter',
-        HttpStatus.BAD_REQUEST
-      )
+      throwHttpException('参数错误，更新菜单失败！', HttpStatus.BAD_REQUEST)
     }
   }
 
@@ -52,17 +53,18 @@ export class MenuService {
       .where('id = :id', { id })
       .execute()
     if (affected > 0) {
-      return 'Update menu status successfully'
+      return '更新菜单显示状态成功！'
     } else {
-      throwHttpException(
-        'Update failed, please check the parameter',
-        HttpStatus.BAD_REQUEST
-      )
+      throwHttpException('参数错误，更新菜单状态失败！', HttpStatus.BAD_REQUEST)
     }
   }
 
   async remove(id: number) {
-    await this.menuRep.delete(id)
-    return 'delete menu successfully'
+    const { affected } = await this.menuRep.delete(id)
+    if (affected > 0) {
+      return '删除菜单成功！'
+    } else {
+      throwHttpException('参数错误，删除菜单失败！', HttpStatus.BAD_REQUEST)
+    }
   }
 }

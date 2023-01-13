@@ -17,7 +17,7 @@ export class RoleService {
   async create({ role_name, permission_menu }: CreateRoleDto) {
     const isExist = await this.roleRep.findOneBy({ role_name })
     if (isExist) {
-      throwHttpException('The role is already exist', HttpStatus.BAD_REQUEST)
+      throwHttpException('角色已经存在，请勿重复添加！', HttpStatus.BAD_REQUEST)
     }
     const role = new Role()
     role.role_name = role_name
@@ -49,17 +49,18 @@ export class RoleService {
     const { id, created_at, updated_at, ...role } = updateRoleDto
     const { affected } = await this.roleRep.update(id, role)
     if (affected > 0) {
-      return 'update role successfully'
+      return '更新角色成功！'
     } else {
-      throwHttpException(
-        'Update failed, please check the parameter',
-        HttpStatus.BAD_REQUEST
-      )
+      throwHttpException('参数错误，更新角色失败！', HttpStatus.BAD_REQUEST)
     }
   }
 
   async remove(id: number) {
-    await this.roleRep.delete(id)
-    return 'delete role successfully'
+    const { affected } = await this.roleRep.delete(id)
+    if (affected > 0) {
+      return '删除角色成功！'
+    } else {
+      throwHttpException('参数错误，删除角色失败！', HttpStatus.BAD_REQUEST)
+    }
   }
 }

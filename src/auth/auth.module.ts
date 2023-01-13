@@ -9,8 +9,6 @@ import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter'
 import { join } from 'path'
 import { AuthController } from './auth.controller'
 import config from 'env.config'
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { Site } from './entities/site.entity'
 
 @Module({
   imports: [
@@ -39,8 +37,7 @@ import { Site } from './entities/site.entity'
           strict: true //严格模式
         }
       }
-    }),
-    TypeOrmModule.forFeature([Site])
+    })
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],

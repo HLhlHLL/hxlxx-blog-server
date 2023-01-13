@@ -19,9 +19,9 @@ async function bootstrap() {
       cookie: { maxAge: 1000 * 60 * 30 }
     })
   )
-  app.useGlobalFilters(new ExcFilter())
-  app.useGlobalPipes(new ValidationPipe())
   app.useGlobalInterceptors(new ResponseInterceptor())
+  app.useGlobalPipes(new ValidationPipe())
+  app.useGlobalFilters(new ExcFilter())
   await app.listen(3000)
 }
 bootstrap()

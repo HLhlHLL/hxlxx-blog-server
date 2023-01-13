@@ -17,7 +17,7 @@ export class CategoryService {
     const isExist = await this.categoryRep.findOneBy({ category_name })
     if (isExist) {
       throwHttpException(
-        'The category is already exist',
+        '文章分类已经存在，请勿重复添加！',
         HttpStatus.BAD_REQUEST
       )
     }
@@ -40,17 +40,18 @@ export class CategoryService {
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
     const { affected } = await this.categoryRep.update(id, updateCategoryDto)
     if (affected > 0) {
-      return 'update category successfully'
+      return '更新文章分类成功！'
     } else {
-      throwHttpException(
-        'Update failed, please check the parameter',
-        HttpStatus.BAD_REQUEST
-      )
+      throwHttpException('参数错误，更新文章分类失败！', HttpStatus.BAD_REQUEST)
     }
   }
 
   async remove(id: number) {
-    await this.categoryRep.delete(id)
-    return 'delete category successfully'
+    const { affected } = await this.categoryRep.delete(id)
+    if (affected > 0) {
+      return '删除文章分类成功！'
+    } else {
+      throwHttpException('参数错误，删除文章分类失败！', HttpStatus.BAD_REQUEST)
+    }
   }
 }
