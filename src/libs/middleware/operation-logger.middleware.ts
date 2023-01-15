@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { InjectEntityManager } from '@nestjs/typeorm'
-import { Request } from 'express'
+import { Request, Response } from 'express'
 import { User } from 'src/api/user/entities/user.entity'
 import { OperationLogger } from 'src/api/operation-logger/entities/operation-logger.entity'
 import { EntityManager } from 'typeorm'
@@ -13,7 +13,7 @@ export class OperationLoggerMiddleware implements NestMiddleware {
     private readonly jwtService: JwtService
   ) {}
 
-  async use(req: Request, res: any, next: (error?: any) => void) {
+  async use(req: Request, res: Response, next: (error?: any) => void) {
     if (req.method !== 'GET') {
       const token = req.headers.authorization.split(' ')[1] || ''
       const { username } = this.jwtService.decode(token) as any
@@ -21,6 +21,7 @@ export class OperationLoggerMiddleware implements NestMiddleware {
       const logger = new OperationLogger()
       logger.path = req.path
       logger.request_type = req.method
+      logger.status_code = res.statusCode
       logger.parameter = req.body
       logger.username = username
       logger.ip = ip

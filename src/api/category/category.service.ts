@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm'
 import { throwHttpException } from 'src/libs/utils'
-import { Repository } from 'typeorm'
+import { EntityManager, Repository } from 'typeorm'
 import { CreateCategoryDto } from './dto/create-category.dto'
 import { UpdateCategoryDto } from './dto/update-category.dto'
 import { Category } from './entities/category.entity'
@@ -9,6 +9,7 @@ import { Category } from './entities/category.entity'
 @Injectable()
 export class CategoryService {
   constructor(
+    @InjectEntityManager() private readonly manager: EntityManager,
     @InjectRepository(Category)
     private readonly categoryRep: Repository<Category>
   ) {}
@@ -46,12 +47,21 @@ export class CategoryService {
     }
   }
 
-  async remove(id: number) {
+  async removeById(id: number) {
     const { affected } = await this.categoryRep.delete(id)
     if (affected > 0) {
       return '删除文章分类成功！'
     } else {
       throwHttpException('参数错误，删除文章分类失败！', HttpStatus.BAD_REQUEST)
     }
+  }
+
+  async removeByIds(ids: number[]) {
+    await this.manager.transaction(async (_manager) => {
+      for (const id of ids) {
+        await _manager.delete(Category, id)
+      }
+    })
+    return '批量删除文章分类成功！'
   }
 }

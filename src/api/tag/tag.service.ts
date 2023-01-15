@@ -1,8 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm'
 import { QueryInfo } from 'src/libs/types'
 import { throwHttpException } from 'src/libs/utils'
-import { Repository } from 'typeorm'
+import { EntityManager, Repository } from 'typeorm'
 import { CreateTagDto } from './dto/create-tag.dto'
 import { UpdateTagDto } from './dto/update-tag.dto'
 import { Tag } from './entities/tag.entity'
@@ -10,6 +10,7 @@ import { Tag } from './entities/tag.entity'
 @Injectable()
 export class TagService {
   constructor(
+    @InjectEntityManager() private readonly manager: EntityManager,
     @InjectRepository(Tag) private readonly tagRep: Repository<Tag>
   ) {}
 
@@ -52,12 +53,21 @@ export class TagService {
     }
   }
 
-  async remove(id: number) {
+  async removeById(id: number) {
     const { affected } = await this.tagRep.delete(id)
     if (affected > 0) {
       return '删除文章标签成功！'
     } else {
       throwHttpException('参数错误，删除文章标签失败！', HttpStatus.BAD_REQUEST)
     }
+  }
+
+  async removeByIds(ids: number[]) {
+    await this.manager.transaction(async (_manager) => {
+      for (const id of ids) {
+        await _manager.delete(Tag, id)
+      }
+    })
+    return '批量删除文章标签成功！'
   }
 }

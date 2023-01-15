@@ -50,8 +50,13 @@ export class TagController {
     return this.tagService.update(id, updateTagDto)
   }
   // 删除某一个标签
-  @Delete(':id')
-  remove(@Param('id', new ParseIntPipe()) id: number) {
-    return this.tagService.remove(id)
+  @Delete('/remove-one')
+  removeById(@Body('id', new ParseIntPipe()) id: number) {
+    return this.tagService.removeById(id)
+  }
+  // 批量删除标签
+  @Delete('/remove-all')
+  removeByIds(@Body('ids') ids: number[]) {
+    return this.tagService.removeByIds(ids)
   }
 }

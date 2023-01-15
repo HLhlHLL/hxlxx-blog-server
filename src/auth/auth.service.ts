@@ -39,7 +39,12 @@ export class AuthService {
   async login(info: any, captcha: string, ip: string) {
     const { username, code } = info
     if (code?.toLowerCase() === captcha.toLowerCase()) {
-      const user = await this.manager.findOneBy(User, { username })
+      const user = (
+        await this.manager.find(User, {
+          relations: ['role'],
+          where: { username }
+        })
+      )[0]
       user.logged_ip = user.ip
       user.ip = ip
       const { data } = await axios.get(config.QUERY_IP_BASEURL(ip))

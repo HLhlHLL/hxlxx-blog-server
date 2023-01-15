@@ -113,7 +113,18 @@ export class Article extends BaseEntity {
       .leftJoinAndSelect('article.tags', 'tag')
       .leftJoinAndSelect('article.category', 'category')
       .select([
-        'article',
+        'article.id',
+        'article.title',
+        'article.description',
+        'article.cover_url',
+        'article.created_at',
+        'article.article_type',
+        'article.view_times',
+        'article.status',
+        'article.top',
+        'article.recommend',
+        'article.privacy',
+        'article.author_id',
         'tag.id',
         'tag.tag_name',
         'category.id',
@@ -132,6 +143,10 @@ export class Article extends BaseEntity {
       .getMany()
   }
 
+  static findById(id: number) {
+    return this.getQueryBuilder().where('article.id = :id', { id }).getOne()
+  }
+
   static searchArticle(query: QueryInfo) {
     const skip = query.skip ? parseInt(query.skip) : undefined
     const limit = query.limit ? parseInt(query.limit) : undefined
@@ -139,13 +154,15 @@ export class Article extends BaseEntity {
       .where('article.title like :keyword', {
         keyword: `%${query.keyword || ''}%`
       })
+      .orWhere('article.description like :keyword', {
+        keyword: `%${query.keyword || ''}%`
+      })
+      .orWhere('article.content like :keyword', {
+        keyword: `%${query.keyword || ''}%`
+      })
       .orderBy('article.id', 'DESC')
       .skip(skip)
       .take(limit)
       .getMany()
-  }
-
-  static findById(id: number) {
-    return this.getQueryBuilder().where('article.id = :id', { id }).getOne()
   }
 }

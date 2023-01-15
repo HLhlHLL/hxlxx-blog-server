@@ -1,14 +1,40 @@
-import { Controller, Get } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  ParseIntPipe,
+  Query,
+  UseGuards
+} from '@nestjs/common'
+import { Menu } from 'src/libs/decorator/menu/menu.decorator'
+import { JwtAuthGuard } from 'src/libs/guard/jwt.guard'
+import { MenuGuard } from 'src/libs/guard/menu.guard'
+import { QueryInfo } from 'src/libs/types'
 import { OperationLoggerService } from './operation-logger.service'
 
 @Controller('log')
+@Menu(17)
+@UseGuards(MenuGuard)
+@UseGuards(JwtAuthGuard)
 export class OperationLoggerController {
   constructor(
     private readonly operationLoggerService: OperationLoggerService
   ) {}
-
+  // 获取所有操作日志
   @Get('/operation')
-  getOperationLogger() {
-    return this.operationLoggerService.getOperationLogger()
+  @Menu(0)
+  getOperationLogger(@Query() query: QueryInfo) {
+    return this.operationLoggerService.getOperationLogger(query)
+  }
+  // 删除某条操作日志
+  @Delete('/operation/remove-one')
+  removeById(@Body('id', new ParseIntPipe()) id: number) {
+    return this.operationLoggerService.removeById(id)
+  }
+  // 批量删除操作日志
+  @Delete('operation/remove-all')
+  removeByIds(@Body('ids') ids: number[]) {
+    return this.operationLoggerService.removeByIds(ids)
   }
 }

@@ -21,6 +21,11 @@ export class OperationLogger {
   request_type: string
 
   @Column({
+    default: 0
+  })
+  status_code: number
+
+  @Column({
     default: ''
   })
   username: string

@@ -48,8 +48,13 @@ export class CategoryController {
     return this.categoryService.update(id, updateCategoryDto)
   }
   // 删除某一个分类
-  @Delete(':id')
-  remove(@Param('id', new ParseIntPipe()) id: number) {
-    return this.categoryService.remove(id)
+  @Delete('/remove-one')
+  removeById(@Body('id', new ParseIntPipe()) id: number) {
+    return this.categoryService.removeById(id)
+  }
+  // 批量删除分类
+  @Delete('/remove-all')
+  removeByIds(@Body('ids') ids: number[]) {
+    return this.categoryService.removeByIds(ids)
   }
 }
