@@ -47,6 +47,16 @@ export class ArticleService {
     return { res, count }
   }
 
+  async findTopFive() {
+    const res = await this.articleRep.find({
+      select: ['id', 'title', 'view_times'],
+      where: { status: true },
+      order: { view_times: 'DESC' },
+      take: 5
+    })
+    return res
+  }
+
   async findAllPublished(query?: QueryInfo) {
     const res = await Article.findAll(query, 1)
     const count = await this.articleRep.countBy({ status: true })

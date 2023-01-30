@@ -12,7 +12,7 @@ import {
 export class Role {
   @PrimaryGeneratedColumn('increment')
   id: number
-
+  // 角色名称
   @Column({
     default: ''
   })
@@ -23,10 +23,10 @@ export class Role {
 
   @UpdateDateColumn()
   updated_at: Date
-
+  // 用户列表
   @OneToMany(() => User, (user) => user.role)
   user: User[]
-
+  // 权限菜单列表
   @Column({
     type: 'simple-array'
   })

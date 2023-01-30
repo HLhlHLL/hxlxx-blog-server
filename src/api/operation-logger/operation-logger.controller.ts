@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   ParseIntPipe,
   Query,
   UseGuards
@@ -24,8 +25,14 @@ export class OperationLoggerController {
   // 获取所有操作日志
   @Get('/operation')
   @Menu(0)
-  getOperationLogger(@Query() query: QueryInfo) {
-    return this.operationLoggerService.getOperationLogger(query)
+  findAll(@Query() query: QueryInfo) {
+    return this.operationLoggerService.findAll(query)
+  }
+  // 获取某条操作日志
+  @Get('/operation/:id')
+  @Menu(0)
+  findById(@Param('id', new ParseIntPipe()) id: number) {
+    return this.operationLoggerService.findById(id)
   }
   // 删除某条操作日志
   @Delete('/operation/remove-one')

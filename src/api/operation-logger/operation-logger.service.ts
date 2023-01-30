@@ -13,12 +13,27 @@ export class OperationLoggerService {
     private readonly operationLoggerRep: Repository<OperationLogger>
   ) {}
 
-  async getOperationLogger({ skip, limit }: QueryInfo) {
+  async findAll({ skip, limit }: QueryInfo) {
     const [res, count] = await this.operationLoggerRep.findAndCount({
+      select: [
+        'id',
+        'username',
+        'path',
+        'request_type',
+        'ip',
+        'address',
+        'status_code',
+        'created_at'
+      ],
       skip: skip ? parseInt(skip) : undefined,
       take: limit ? parseInt(limit) : undefined
     })
     return { res, count }
+  }
+
+  async findById(id: number) {
+    const logger = await this.operationLoggerRep.findOneBy({ id })
+    return logger
   }
 
   async removeById(id: number) {

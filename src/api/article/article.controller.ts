@@ -45,6 +45,12 @@ export class ArticleController {
   findAll(@Query() query: QueryInfo) {
     return this.articleService.searchArticle(query)
   }
+  // 查询访问量前五的文章
+  @Get('/top5')
+  @Menu(0)
+  findTopFive() {
+    return this.articleService.findTopFive()
+  }
   // 查询已发布的文章
   @Get('/published')
   @Menu(0)

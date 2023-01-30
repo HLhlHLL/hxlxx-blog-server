@@ -56,21 +56,25 @@ export class AuthService {
         if (currentTime - this.LOGGED_TIME_OFFSET > lastTime) {
           user.logged_at = new Date()
           // 更新访问量
-          const site = (await this.manager.find(Site))[0]
-          site.view_times++
+          const site = new Site()
+          site.username = user.username
+          site.ip = user.ip
+          site.address = user.address
           await this.manager.save(site)
         }
       } else {
         user.logged_at = new Date()
-        const site = (await this.manager.find(Site))[0]
-        site.view_times++
+        const site = new Site()
+        site.username = user.username
+        site.ip = user.ip
+        site.address = user.address
         await this.manager.save(site)
       }
       await this.manager.save(user)
       if (!user.status) {
         throwHttpException('该用户已被禁用！', HttpStatus.I_AM_A_TEAPOT)
       }
-      const payload = { username, sub: code }
+      const payload = { username, id: user.id }
       return {
         token: 'Bearer ' + this.jwtService.sign(payload),
         user

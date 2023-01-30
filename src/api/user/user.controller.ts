@@ -61,19 +61,18 @@ export class UserController {
   resetUsername(@Body() user: UpdateUserDto) {
     return this.userService.resetUsername(user)
   }
-  // 重置密码的前置验证
-  @Post('/auth')
-  @UseGuards(JwtAuthGuard)
-  authentication(@Body() user: UpdateUserDto) {
-    return this.userService.authentication(user)
-  }
   // 重置密码
   @Patch('/password')
   @UseGuards(JwtAuthGuard)
-  resetPassword(@Body() user: UpdateUserDto) {
-    return this.userService.resetPassword(user)
+  resetPassword(@Body() passwordInfo: any) {
+    return this.userService.resetPassword(passwordInfo)
   }
   // 修改头像
+  @Patch('/avatar')
+  @UseGuards(JwtAuthGuard)
+  resetAvatar(@Body() user: UpdateUserDto) {
+    return this.userService.resetAvatar(user)
+  }
   // 删除用户
   @Delete(':id')
   @UseGuards(JwtAuthGuard)

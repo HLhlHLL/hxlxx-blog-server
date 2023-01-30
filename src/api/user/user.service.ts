@@ -32,8 +32,7 @@ export class UserService {
     user.username = username
     user.email = email
     user.avatar_url = config.DEFAULT_AVATAR_URL
-    password = hashSync(password, 10)
-    user.password = password
+    user.password = hashSync(password, 10)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...res } = await this.userRep.save(user)
     return res
@@ -86,57 +85,36 @@ export class UserService {
   async resetUsername({ id, username }) {
     const { affected } = await this.userRep.update(id, { username })
     if (affected > 0) {
-      return 'Update username successfully'
+      return '更新用户名成功！'
     } else {
-      throwHttpException(
-        'Update username failed, please check the parameter',
-        HttpStatus.BAD_REQUEST
-      )
+      throwHttpException('参数错误，更新用户名失败！', HttpStatus.BAD_REQUEST)
     }
   }
 
-  async authentication({ id, password }) {
-    const user = await this.userRep.findOneBy({ id })
+  async resetPassword({ id, oldPwd, newPwd }) {
+    const user = await this.manager
+      .createQueryBuilder(User, 'user')
+      .addSelect(['user.password'])
+      .where('user.id = :id', { id })
+      .getOne()
     if (!user) {
-      throwHttpException(
-        'User is not exist, please check the parameter',
-        HttpStatus.BAD_REQUEST
-      )
+      throwHttpException('用户不存在！', HttpStatus.BAD_REQUEST)
     }
-    const auth = compareSync(password, user.password)
-    if (auth) {
-      const token = Math.random().toString().slice(-6)
-      global.TEMP_TOKEN = token
-      return { token }
-    } else {
-      throwHttpException(
-        'Password is wrong, please try again',
-        HttpStatus.BAD_REQUEST
-      )
-    }
-  }
-
-  async resetPassword(user) {
-    if (global.TEMP_TOKEN === user.auth_token) {
-      const password = hashSync(user.password, 10)
+    const valid = compareSync(oldPwd, user.password)
+    if (valid) {
+      const password = hashSync(newPwd, 10)
       const { affected } = await this.userRep.update(user.id, { password })
       if (affected > 0) {
-        return 'update user successfully'
+        return '重置密码成功！'
       } else {
-        throwHttpException(
-          'Reset password failed, please check the parameter',
-          HttpStatus.BAD_REQUEST
-        )
+        throwHttpException('参数错误，重置密码失败！', HttpStatus.BAD_REQUEST)
       }
     } else {
-      throwHttpException(
-        'Authentication failed, please get the authentication token first',
-        HttpStatus.BAD_REQUEST
-      )
+      throwHttpException('密码错误，请重试！', HttpStatus.BAD_REQUEST)
     }
   }
 
-  async resetAvatar(id, avatar_url) {
+  async resetAvatar({ id, avatar_url }) {
     const { affected } = await this.userRep.update(id, { avatar_url })
     if (affected > 0) {
       return 'Update avatar successfully'

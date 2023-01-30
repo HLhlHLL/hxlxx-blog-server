@@ -30,4 +30,6 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   role_id: number
 
   status: boolean
+
+  avatar_url: string
 }

@@ -24,70 +24,70 @@ export enum ARTICLE_TYPE {
 export class Article extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number
-
+  // 标题
   @Column({
     default: ''
   })
   title: string
-
+  // 内容
   @Column({
     type: 'text'
   })
   content: string
-
+  // 摘要
   @Column({
     default: ''
   })
   description: string
-
+  // 封面地址
   @Column({
     default: ''
   })
   cover_url: string
-
+  // 发布时间
   @CreateDateColumn()
   created_at: Date
-
+  // 更新时间
   @UpdateDateColumn()
   updated_at: Date
-
+  // 文章类型：原创、转载、翻译
   @Column({
     type: 'enum',
     enum: ARTICLE_TYPE,
     default: ARTICLE_TYPE.ORIGINAL
   })
   article_type: ARTICLE_TYPE
-
+  // 访问次数
   @Column({
     default: 0
   })
   view_times: number
-
+  // 文章状态：已发布、草稿
   @Column({
     default: true
   })
   status: boolean
-
+  // 置顶
   @Column({
     default: false
   })
   top: boolean
-
+  // 推荐
   @Column({
     default: false
   })
   recommend: boolean
-
+  // 隐藏
   @Column({
     default: false
   })
   privacy: boolean
-
+  // 作者id
   @Column({
     default: 0
   })
   author_id: number
-
+  // 标签
   @ManyToMany(() => Tag, (tag) => tag.tag_name)
   @JoinTable({
     name: 'articles_tags',
@@ -101,7 +101,7 @@ export class Article extends BaseEntity {
     }
   })
   tags: Tag[]
-
+  // 分类
   @ManyToOne(() => Category, (category) => category.articles)
   @JoinColumn({
     name: 'category_id'
@@ -113,18 +113,7 @@ export class Article extends BaseEntity {
       .leftJoinAndSelect('article.tags', 'tag')
       .leftJoinAndSelect('article.category', 'category')
       .select([
-        'article.id',
-        'article.title',
-        'article.description',
-        'article.cover_url',
-        'article.created_at',
-        'article.article_type',
-        'article.view_times',
-        'article.status',
-        'article.top',
-        'article.recommend',
-        'article.privacy',
-        'article.author_id',
+        'article',
         'tag.id',
         'tag.tag_name',
         'category.id',
