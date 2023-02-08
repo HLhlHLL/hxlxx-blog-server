@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common'
 import { ValidationError } from 'class-validator'
-import { createWriteStream } from 'fs'
 import { extname } from 'path'
 
 export const throwHttpException = (
@@ -34,14 +33,6 @@ export const imageFileFilter = (req, file, callback) => {
     return callback(new Error('Only image files are allowed!'), false)
   }
   callback(null, true)
-}
-
-export const fileWriter = (path: string, data: Buffer) => {
-  const fw = createWriteStream(path)
-  fw.on('error', (e) => {
-    console.log(e.message)
-  })
-  fw.write(data)
 }
 
 export const isValidDate = (date: Date) => {

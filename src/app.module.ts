@@ -16,6 +16,7 @@ import { SiteModule } from './api/site/site.module'
 import { OperationLoggerModule } from './api/operation-logger/operation-logger.module'
 import { APP_INTERCEPTOR } from '@nestjs/core'
 import { OperationLoggerInterceptor } from './libs/interceptor/operation-logger.interceptor'
+import { AlbumModule } from './api/album/album.module'
 
 @Module({
   imports: [
@@ -42,7 +43,8 @@ import { OperationLoggerInterceptor } from './libs/interceptor/operation-logger.
     GlobalJwtModule,
     MenuModule,
     SiteModule,
-    OperationLoggerModule
+    OperationLoggerModule,
+    AlbumModule
   ],
   controllers: [AppController],
   providers: [

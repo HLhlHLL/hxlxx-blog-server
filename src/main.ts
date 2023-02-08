@@ -6,6 +6,7 @@ import { ExcFilter } from './libs/filter/exception.filter'
 import { NestExpressApplication } from '@nestjs/platform-express'
 import * as requestIp from 'request-ip'
 import * as session from 'express-session'
+import { join } from 'path'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
@@ -22,6 +23,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ResponseInterceptor())
   app.useGlobalPipes(new ValidationPipe())
   app.useGlobalFilters(new ExcFilter())
+  app.useStaticAssets(join(__dirname, 'assets/album'), { prefix: '/album' })
   await app.listen(3000)
 }
 bootstrap()

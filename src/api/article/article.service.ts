@@ -36,11 +36,39 @@ export class ArticleService {
     return article
   }
 
+  async findPinned() {
+    const res = (
+      await this.articleRep.find({
+        relations: ['tags', 'category', 'author'],
+        where: { top: true },
+        order: { view_times: 'DESC' },
+        take: 1
+      })
+    )[0]
+    return res
+  }
+
+  async findFeatured() {
+    const res = await this.articleRep.find({
+      relations: ['tags', 'category', 'author'],
+      where: { recommend: true, top: false },
+      order: { view_times: 'DESC' },
+      take: 2
+    })
+    return res
+  }
+
   async searchArticle(query?: QueryInfo) {
     const res = await Article.searchArticle(query)
     const count = await this.articleRep
       .createQueryBuilder()
       .where('article.title like :keyword', {
+        keyword: `%${query.keyword || ''}%`
+      })
+      .orWhere('article.description like :keyword', {
+        keyword: `%${query.keyword || ''}%`
+      })
+      .orWhere('article.content like :keyword', {
         keyword: `%${query.keyword || ''}%`
       })
       .getCount()
@@ -58,8 +86,7 @@ export class ArticleService {
   }
 
   async findAllPublished(query?: QueryInfo) {
-    const res = await Article.findAll(query, 1)
-    const count = await this.articleRep.countBy({ status: true })
+    const [res, count] = await Article.findAll(query, 1)
     return { res, count }
   }
 

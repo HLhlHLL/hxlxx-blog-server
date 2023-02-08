@@ -26,6 +26,7 @@ const config: IEnvConfig = {
   MYSQL_PORT: 3306,
   MYSQL_DATABASE_NAME: 'blog',
   TOKEN_SECRET: 'hxlxx-xxxx',
+  // BASE_URL: 'https://www.hxlxx.xyz:3000',
   BASE_URL: 'http://localhost:3000',
   STATICE_DIRECTORY: join(__dirname, 'assets'),
   EMAIL_SERVER_HOST: 'smtp.exmail.qq.com',

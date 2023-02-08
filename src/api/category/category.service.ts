@@ -33,6 +33,18 @@ export class CategoryService {
     return { res, count }
   }
 
+  async findCategoryAndCount() {
+    const res = await this.categoryRep
+      .createQueryBuilder('category')
+      .leftJoinAndSelect('category.articles', 'article')
+      .select(['category_name', 'category.id id'])
+      .where('article.status = :status', { status: true })
+      .addSelect('COUNT(category.id)', 'count')
+      .groupBy('category.id')
+      .getRawMany()
+    return res
+  }
+
   async findById(id: number) {
     const res = await this.categoryRep.findOneBy({ id })
     return res

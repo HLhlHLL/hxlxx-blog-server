@@ -1,3 +1,4 @@
+import { Article } from 'src/api/article/entities/article.entity'
 import { Role } from 'src/api/role/entities/role.entity'
 import {
   Entity,
@@ -6,7 +7,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn,
-  ManyToOne
+  ManyToOne,
+  OneToMany
 } from 'typeorm'
 
 @Entity()
@@ -71,4 +73,7 @@ export class User {
     referencedColumnName: 'id'
   })
   role: Role
+  // 文章
+  @OneToMany(() => Article, (article) => article.author)
+  articles: Article[]
 }

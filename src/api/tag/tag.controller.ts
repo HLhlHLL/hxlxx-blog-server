@@ -20,12 +20,12 @@ import { MenuGuard } from 'src/libs/guard/menu.guard'
 
 @Controller('tag')
 @Menu(9)
-@UseGuards(JwtAuthGuard)
 @UseGuards(MenuGuard)
 export class TagController {
   constructor(private readonly tagService: TagService) {}
   // 新建文章标签
   @Post()
+  @UseGuards(JwtAuthGuard)
   create(@Body() createTagDto: CreateTagDto) {
     return this.tagService.create(createTagDto)
   }
@@ -35,6 +35,12 @@ export class TagController {
   findAll(@Query() query?: QueryInfo) {
     return this.tagService.findAll(query)
   }
+  // 获取所有标签和对应的文章数量
+  @Get('/tag-count')
+  @Menu(0)
+  findTagAndCount() {
+    return this.tagService.findTagAndCount()
+  }
   // 获取某一个标签
   @Get(':id')
   @Menu(0)
@@ -43,6 +49,7 @@ export class TagController {
   }
   // 更新某一个标签
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   update(
     @Param('id', new ParseIntPipe()) id: number,
     @Body() updateTagDto: UpdateTagDto
@@ -51,11 +58,13 @@ export class TagController {
   }
   // 删除某一个标签
   @Delete('/remove-one')
+  @UseGuards(JwtAuthGuard)
   removeById(@Body('id', new ParseIntPipe()) id: number) {
     return this.tagService.removeById(id)
   }
   // 批量删除标签
   @Delete('/remove-all')
+  @UseGuards(JwtAuthGuard)
   removeByIds(@Body('ids') ids: number[]) {
     return this.tagService.removeByIds(ids)
   }

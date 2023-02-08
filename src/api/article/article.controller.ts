@@ -33,6 +33,18 @@ export class ArticleController {
   create(@Body() article: CreateArticleDto) {
     return this.articleService.create(article)
   }
+  // 获取置顶文章(默认取访问量最高项)
+  @Get('/pinned')
+  @Menu(0)
+  findPinned() {
+    return this.articleService.findPinned()
+  }
+  // 获取推荐文章(默认只取访问量最高前两项)
+  @Get('/featured')
+  @Menu(0)
+  findFeatured() {
+    return this.articleService.findFeatured()
+  }
   // 新建草稿
   @Post('/draft')
   @UseGuards(JwtAuthGuard)

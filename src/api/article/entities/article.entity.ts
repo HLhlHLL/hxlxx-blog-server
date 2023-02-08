@@ -13,6 +13,7 @@ import {
 } from 'typeorm'
 import { Category } from '../../category/entities/category.entity'
 import { QueryInfo } from 'src/libs/types'
+import { User } from 'src/api/user/entities/user.entity'
 
 export enum ARTICLE_TYPE {
   ORIGINAL = 'original',
@@ -82,13 +83,8 @@ export class Article extends BaseEntity {
     default: false
   })
   privacy: boolean
-  // 作者id
-  @Column({
-    default: 0
-  })
-  author_id: number
   // 标签
-  @ManyToMany(() => Tag, (tag) => tag.tag_name)
+  @ManyToMany(() => Tag, (tag) => tag.articles)
   @JoinTable({
     name: 'articles_tags',
     joinColumn: {
@@ -107,13 +103,21 @@ export class Article extends BaseEntity {
     name: 'category_id'
   })
   category: Category
+  // 作者
+  @ManyToOne(() => User, (user) => user.articles)
+  @JoinColumn({
+    name: 'author_id'
+  })
+  author: User
 
   static getQueryBuilder() {
     return this.createQueryBuilder('article')
       .leftJoinAndSelect('article.tags', 'tag')
       .leftJoinAndSelect('article.category', 'category')
+      .leftJoinAndSelect('article.author', 'author')
       .select([
         'article',
+        'author',
         'tag.id',
         'tag.tag_name',
         'category.id',
@@ -122,14 +126,22 @@ export class Article extends BaseEntity {
   }
 
   static findAll(query: QueryInfo, status?: number) {
+    const hasTag = Number.isNaN(parseInt(query.tag_id))
+      ? '1'
+      : `tag.id = ${parseInt(query.tag_id)}`
+    const hasCategory = Number.isNaN(parseInt(query.category_id))
+      ? '1'
+      : `category.id = ${parseInt(query.category_id)}`
     const skip = query.skip ? parseInt(query.skip) : undefined
     const limit = query.limit ? parseInt(query.limit) : undefined
     return this.getQueryBuilder()
       .where('article.status = :status', { status })
+      .andWhere(hasTag)
+      .andWhere(hasCategory)
       .orderBy('article.id', 'DESC')
       .skip(skip)
       .take(limit)
-      .getMany()
+      .getManyAndCount()
   }
 
   static findById(id: number) {

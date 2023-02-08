@@ -18,12 +18,12 @@ import { UpdateCategoryDto } from './dto/update-category.dto'
 
 @Controller('category')
 @Menu(8)
-@UseGuards(JwtAuthGuard)
 @UseGuards(MenuGuard)
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
   // 新建文章分类
   @Post()
+  @UseGuards(JwtAuthGuard)
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoryService.create(createCategoryDto)
   }
@@ -33,6 +33,12 @@ export class CategoryController {
   findAll() {
     return this.categoryService.findAll()
   }
+  // 获取所有分类和对应的文章数量
+  @Get('/category-count')
+  @Menu(0)
+  findCategoryAndCount() {
+    return this.categoryService.findCategoryAndCount()
+  }
   // 获取某一个分类
   @Get(':id')
   @Menu(0)
@@ -41,6 +47,7 @@ export class CategoryController {
   }
   // 更新某一个分类
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   update(
     @Param('id', new ParseIntPipe()) id: number,
     @Body() updateCategoryDto: UpdateCategoryDto
@@ -49,11 +56,13 @@ export class CategoryController {
   }
   // 删除某一个分类
   @Delete('/remove-one')
+  @UseGuards(JwtAuthGuard)
   removeById(@Body('id', new ParseIntPipe()) id: number) {
     return this.categoryService.removeById(id)
   }
   // 批量删除分类
   @Delete('/remove-all')
+  @UseGuards(JwtAuthGuard)
   removeByIds(@Body('ids') ids: number[]) {
     return this.categoryService.removeByIds(ids)
   }
