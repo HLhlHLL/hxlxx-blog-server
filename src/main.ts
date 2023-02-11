@@ -23,7 +23,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ResponseInterceptor())
   app.useGlobalPipes(new ValidationPipe())
   app.useGlobalFilters(new ExcFilter())
-  app.useStaticAssets(join(__dirname, 'assets/album'), { prefix: '/album' })
+  app.useStaticAssets(join(__dirname, 'assets/static'), { prefix: '/static' })
   await app.listen(3000)
 }
 bootstrap()

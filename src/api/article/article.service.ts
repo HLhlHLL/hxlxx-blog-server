@@ -58,6 +58,38 @@ export class ArticleService {
     return res
   }
 
+  async findDetailById(id: number, ip: string) {
+    const res = await Article.getQueryBuilder()
+      .where('article.id = :id', { id })
+      .getOne()
+    const first = await Article.getQueryBuilder()
+      .orderBy({ 'article.id': 'ASC' })
+      .limit(1)
+      .getOne()
+    const last = await Article.getQueryBuilder()
+      .orderBy({ 'article.id': 'DESC' })
+      .limit(1)
+      .getOne()
+    const pre = await Article.getQueryBuilder()
+      .orderBy({ 'article.id': 'DESC' })
+      .where('article.id < :id', { id })
+      .limit(1)
+      .getOne()
+    const next = await Article.getQueryBuilder()
+      .orderBy({ 'article.id': 'ASC' })
+      .where('article.id > :id', { id })
+      .limit(1)
+      .getOne()
+    if (ip !== '127.0.0.1') {
+      await this.articleRep.update(id, { view_times: res.view_times + 1 })
+    }
+    return {
+      ...res,
+      preArticle: pre || last,
+      nextArticle: next || first
+    }
+  }
+
   async searchArticle(query?: QueryInfo) {
     const res = await Article.searchArticle(query)
     const count = await this.articleRep
@@ -96,12 +128,9 @@ export class ArticleService {
     return { res, count }
   }
 
-  async findById(id: number, ip: string) {
+  async findById(id: number) {
     const res = await Article.findById(id)
-    if (ip !== '127.0.0.1') {
-      await this.articleRep.update(id, { view_times: res.view_times + 1 })
-    }
-    return { res, ip }
+    return res
   }
 
   async update(id: number, article: UpdateArticleDto | UpdateDraftDto) {

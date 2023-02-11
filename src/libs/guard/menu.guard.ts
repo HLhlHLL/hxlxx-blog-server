@@ -24,16 +24,16 @@ export class MenuGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest<Request>()
     const token = request.headers.authorization.split(' ')[1] || ''
-    const { id } = this.jwtService.decode(token) as any
-    return this.validate(id, requireMenu)
+    const { email } = this.jwtService.decode(token) as any
+    return this.validate(email, requireMenu)
   }
 
-  async validate(id: number, permission: number) {
+  async validate(email: string, permission: number) {
     const { role } = await this.manager
       .createQueryBuilder(User, 'user')
       .leftJoinAndSelect('user.role', 'role')
       .select(['user.username', 'role.role_name', 'role.permission_menu'])
-      .where('user.id = :id', { id })
+      .where('user.email = :email', { email })
       .getOne()
     if (role.role_name === 'admin') return true
     return (role.permission_menu as unknown as number[]).includes(permission)

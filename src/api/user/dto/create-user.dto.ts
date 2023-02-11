@@ -15,10 +15,10 @@ export class CreateUserDto {
   @IsNumber()
   id?: number
 
-  @IsDefined()
+  @IsOptional()
   @IsNotEmpty()
   @Length(5, 10)
-  username: string
+  username?: string
 
   @IsDefined()
   @IsNotEmpty()

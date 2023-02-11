@@ -45,6 +45,18 @@ export class ArticleController {
   findFeatured() {
     return this.articleService.findFeatured()
   }
+  // 获取文章详情
+  @Get('/detail/:id')
+  @Menu(0)
+  findDetailById(
+    @Param('id', new ParseIntPipe()) id: number,
+    @Req() req: Request
+  ) {
+    return this.articleService.findDetailById(
+      id,
+      req.clientIp.replace('::ffff:', '')
+    )
+  }
   // 新建草稿
   @Post('/draft')
   @UseGuards(JwtAuthGuard)
@@ -78,8 +90,8 @@ export class ArticleController {
   // 获取某一篇文章
   @Get(':id')
   @Menu(0)
-  findById(@Param('id', new ParseIntPipe()) id: number, @Req() req: Request) {
-    return this.articleService.findById(id, req.clientIp.replace('::ffff:', ''))
+  findById(@Param('id', new ParseIntPipe()) id: number) {
+    return this.articleService.findById(id)
   }
   // 更新文章
   @Patch()

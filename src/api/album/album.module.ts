@@ -16,7 +16,7 @@ import { Album } from './entities/album.entity'
         filename: fileNameGenerator
       }),
       limits: {
-        fileSize: 1024 * 1024 * 2
+        fileSize: 1024 * 1024 * 5
       },
       fileFilter: imageFileFilter
     }),

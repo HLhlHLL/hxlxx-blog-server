@@ -15,13 +15,10 @@ export class UserService {
     @InjectEntityManager() private readonly manager: EntityManager
   ) {}
 
-  async register(
-    { username, password, email, code }: CreateUserDto,
-    emailCode: string
-  ) {
-    const isExist = await this.userRep.findOneBy({ username })
+  async register({ password, email, code }: CreateUserDto, emailCode: string) {
+    const isExist = await this.userRep.findOneBy({ email })
     if (isExist) {
-      throwHttpException('用户名已经存在！', HttpStatus.BAD_REQUEST)
+      throwHttpException('邮箱已经存在！', HttpStatus.BAD_REQUEST)
     }
     if (emailCode !== code) {
       throwHttpException('验证码错误！', HttpStatus.BAD_REQUEST)
@@ -29,7 +26,7 @@ export class UserService {
     const user = new User()
     const role = await this.manager.findOneBy(Role, { role_name: 'user' })
     user.role = role
-    user.username = username
+    user.username = email
     user.email = email
     user.avatar_url = config.DEFAULT_AVATAR_URL
     user.password = hashSync(password, 10)

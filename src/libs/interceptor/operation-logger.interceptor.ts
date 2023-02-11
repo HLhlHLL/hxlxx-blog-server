@@ -29,15 +29,15 @@ export class OperationLoggerInterceptor implements NestInterceptor {
       tap(async (data) => {
         if (request.method !== 'GET' && request.path !== '/login') {
           const token = request.headers.authorization.split(' ')[1] || ''
-          const { id } = this.jwtService.decode(token) as any
-          const { ip, address, username } = (
-            await this.manager.findBy(User, { id })
+          const { email } = this.jwtService.decode(token) as any
+          const { ip, address } = (
+            await this.manager.findBy(User, { email })
           )[0]
           const logger = new OperationLogger()
           logger.path = request.path
           logger.request_type = request.method
           logger.parameter = request.body
-          logger.username = username
+          logger.username = email
           logger.ip = ip
           logger.address = address
           logger.status_code = response.statusCode

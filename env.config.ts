@@ -15,8 +15,12 @@ export interface IEnvConfig {
   EMAIL_CLIENT_PASSWORD: string
   ROOT_EMAIL: string
   DEFAULT_AVATAR_URL: string
+  DEFAULT_COVER_URL: string
   QUERY_IP_BASEURL: (ip: string) => string
 }
+
+const BASE_URL = 'http://localhost:3000'
+// BASE_URL: 'https://www.hxlxx.xyz:3000'
 
 const config: IEnvConfig = {
   DATABASE_TYPE: 'mysql',
@@ -26,14 +30,14 @@ const config: IEnvConfig = {
   MYSQL_PORT: 3306,
   MYSQL_DATABASE_NAME: 'blog',
   TOKEN_SECRET: 'hxlxx-xxxx',
-  // BASE_URL: 'https://www.hxlxx.xyz:3000',
-  BASE_URL: 'http://localhost:3000',
+  BASE_URL,
   STATICE_DIRECTORY: join(__dirname, 'assets'),
   EMAIL_SERVER_HOST: 'smtp.exmail.qq.com',
   EMAIL_SERVER_PORT: 465,
   EMAIL_CLIENT_PASSWORD: 'Rw589TFn6oihZ4vu',
   ROOT_EMAIL: 'huanglei@hxlx33.wecom.work',
-  DEFAULT_AVATAR_URL: 'https://imgbed.hxlxx.xyz/default_avatar.jpg',
+  DEFAULT_AVATAR_URL: BASE_URL + '/static/default_avatar.jpg',
+  DEFAULT_COVER_URL: BASE_URL + '/static/default_cover.jpg',
   QUERY_IP_BASEURL: (ip: string) =>
     `http://opendata.baidu.com/api.php?query=${ip}&co=&resource_id=6006&oe=utf8`
 }
