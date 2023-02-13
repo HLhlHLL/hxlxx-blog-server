@@ -16,7 +16,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
 
   @IsDefined()
   @IsNotEmpty()
-  @Length(5, 10)
+  @Length(5, 20)
   username: string
 
   @IsDefined()

@@ -7,7 +7,6 @@ import { UserModule } from './api/user/user.module'
 import { CommentModule } from './api/comment/comment.module'
 import { TagModule } from './api/tag/tag.module'
 import { CategoryModule } from './api/category/category.module'
-// import { AuthModule } from './global-api/global-api.module'
 import { RoleModule } from './api/role/role.module'
 import { MenuModule } from './api/menu/menu.module'
 import { GlobalJwtModule } from './jwt/jwt.module'
@@ -90,7 +89,6 @@ import { JwtStrategy } from './libs/strategies/jwt.strategy'
     CommentModule,
     TagModule,
     CategoryModule,
-    // AuthModule,
     RoleModule,
     GlobalJwtModule,
     MenuModule,

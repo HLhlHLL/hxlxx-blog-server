@@ -41,6 +41,12 @@ export class TagController {
   findTagAndCount() {
     return this.tagService.findTagAndCount()
   }
+  // 获取所有标签和对应的文章数量top10
+  @Get('/top10')
+  @Menu(0)
+  findTagTop10() {
+    return this.tagService.findTagTop10()
+  }
   // 获取某一个标签
   @Get(':id')
   @Menu(0)

@@ -30,8 +30,7 @@ export class UserService {
     user.email = email
     user.avatar_url = config.DEFAULT_AVATAR_URL
     user.password = hashSync(password, 10)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: _, ...res } = await this.userRep.save(user)
+    const res = await this.userRep.save(user)
     return res
   }
 
@@ -82,39 +81,64 @@ export class UserService {
   async resetUsername({ id, username }) {
     const { affected } = await this.userRep.update(id, { username })
     if (affected > 0) {
-      return '更新用户名成功！'
+      const res = await this.userRep.findOneBy({ id })
+      return res
     } else {
       throwHttpException('参数错误，更新用户名失败！', HttpStatus.BAD_REQUEST)
     }
   }
 
-  async resetPassword({ id, oldPwd, newPwd }) {
+  async resetPassword(
+    { email, oldPwd, newPwd, password, code },
+    emailCode: string
+  ) {
     const user = await this.manager
       .createQueryBuilder(User, 'user')
       .addSelect(['user.password'])
-      .where('user.id = :id', { id })
+      .where('user.email = :email', { email })
       .getOne()
-    if (!user) {
-      throwHttpException('用户不存在！', HttpStatus.BAD_REQUEST)
-    }
-    const valid = compareSync(oldPwd, user.password)
-    if (valid) {
-      const password = hashSync(newPwd, 10)
-      const { affected } = await this.userRep.update(user.id, { password })
-      if (affected > 0) {
-        return '重置密码成功！'
+    // 后台重置密码
+    if (oldPwd && newPwd) {
+      if (!user) {
+        throwHttpException('用户不存在！', HttpStatus.BAD_REQUEST)
+      }
+      const valid = compareSync(oldPwd, user.password)
+      if (valid) {
+        const password = hashSync(newPwd, 10)
+        const { affected } = await this.userRep.update(user.id, { password })
+        if (affected > 0) {
+          return '重置密码成功！'
+        } else {
+          throwHttpException('参数错误，重置密码失败！', HttpStatus.BAD_REQUEST)
+        }
       } else {
-        throwHttpException('参数错误，重置密码失败！', HttpStatus.BAD_REQUEST)
+        throwHttpException('密码错误，请重试！', HttpStatus.BAD_REQUEST)
+      }
+    } else if (code && emailCode) {
+      // 博客重置密码
+      if (code === emailCode) {
+        const hashPwd = hashSync(password, 10)
+        const { affected } = await this.userRep.update(user.id, {
+          password: hashPwd
+        })
+        if (affected > 0) {
+          return '重置密码成功！'
+        } else {
+          throwHttpException('参数错误，重置密码失败！', HttpStatus.BAD_REQUEST)
+        }
+      } else {
+        throwHttpException('验证码错误，重置密码失败！', HttpStatus.BAD_REQUEST)
       }
     } else {
-      throwHttpException('密码错误，请重试！', HttpStatus.BAD_REQUEST)
+      throwHttpException('参数错误，重置密码失败！', HttpStatus.BAD_REQUEST)
     }
   }
 
   async resetAvatar({ id, avatar_url }) {
     const { affected } = await this.userRep.update(id, { avatar_url })
     if (affected > 0) {
-      return 'Update avatar successfully'
+      const res = await this.userRep.findOneBy({ id })
+      return res
     } else {
       throwHttpException(
         'Update avatar failed, please check the parameter',

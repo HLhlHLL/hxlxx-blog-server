@@ -45,6 +45,19 @@ export class CategoryService {
     return res
   }
 
+  async findCategoryTop10() {
+    const res = await this.categoryRep
+      .createQueryBuilder('category')
+      .leftJoinAndSelect('category.articles', 'article')
+      .select(['category_name', 'category.id id'])
+      .where('article.status = :status', { status: true })
+      .addSelect('COUNT(category.id)', 'count')
+      .groupBy('category.id')
+      .limit(10)
+      .getRawMany()
+    return res
+  }
+
   async findById(id: number) {
     const res = await this.categoryRep.findOneBy({ id })
     return res

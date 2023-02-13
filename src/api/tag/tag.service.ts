@@ -51,6 +51,19 @@ export class TagService {
     return res
   }
 
+  async findTagTop10() {
+    const res = await this.tagRep
+      .createQueryBuilder('tag')
+      .innerJoinAndSelect('tag.articles', 'article')
+      .select(['tag_name', 'tag.id id'])
+      .where('article.status = :status', { status: true })
+      .addSelect('COUNT(tag.id)', 'count')
+      .groupBy('tag.id')
+      .limit(10)
+      .getRawMany()
+    return res
+  }
+
   async findById(id: number) {
     const res = await this.tagRep.findOneBy({ id })
     return res

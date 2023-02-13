@@ -25,9 +25,10 @@ export class OperationLoggerInterceptor implements NestInterceptor {
   ): Observable<any> | Promise<Observable<any>> {
     const request = context.switchToHttp().getRequest<Request>()
     const response = context.switchToHttp().getResponse<Response>()
+    const ignorePaths = ['/login', '/code', '/user/register', '/user/password']
     return next.handle().pipe(
       tap(async (data) => {
-        if (request.method !== 'GET' && request.path !== '/login') {
+        if (request.method !== 'GET' && !ignorePaths.includes(request.path)) {
           const token = request.headers.authorization.split(' ')[1] || ''
           const { email } = this.jwtService.decode(token) as any
           const { ip, address } = (

@@ -58,18 +58,21 @@ export class UserController {
   // 重置用户名
   @Patch('/username')
   @UseGuards(JwtAuthGuard)
+  @Menu(0)
   resetUsername(@Body() user: UpdateUserDto) {
     return this.userService.resetUsername(user)
   }
   // 重置密码
   @Patch('/password')
-  @UseGuards(JwtAuthGuard)
-  resetPassword(@Body() passwordInfo: any) {
-    return this.userService.resetPassword(passwordInfo)
+  @Menu(0)
+  resetPassword(@Body() passwordInfo: any, @Session() session) {
+    const emailCode = session.emailCode
+    return this.userService.resetPassword(passwordInfo, emailCode)
   }
   // 修改头像
   @Patch('/avatar')
   @UseGuards(JwtAuthGuard)
+  @Menu(0)
   resetAvatar(@Body() user: UpdateUserDto) {
     return this.userService.resetAvatar(user)
   }

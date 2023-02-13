@@ -39,6 +39,12 @@ export class CategoryController {
   findCategoryAndCount() {
     return this.categoryService.findCategoryAndCount()
   }
+  // 获取所有分类和对应的文章数量top10
+  @Get('/top10')
+  @Menu(0)
+  findCategoryTop10() {
+    return this.categoryService.findCategoryTop10()
+  }
   // 获取某一个分类
   @Get(':id')
   @Menu(0)
