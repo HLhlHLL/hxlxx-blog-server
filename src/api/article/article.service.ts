@@ -36,6 +36,33 @@ export class ArticleService {
     return article
   }
 
+  async findArchives(query?: QueryInfo) {
+    const articles = await this.articleRep.find({
+      order: { created_at: 'DESC' },
+      skip: parseInt(query.skip),
+      take: parseInt(query.limit)
+    })
+    const cache = {}
+    articles.forEach((item) => {
+      const timeLine = `${item.created_at.getFullYear()}-${
+        item.created_at.getMonth() + 1
+      }`
+      if (!cache[timeLine]) {
+        cache[timeLine] = [item]
+      } else {
+        cache[timeLine].push(item)
+      }
+    })
+    const res = Object.entries(cache).map((item) => ({
+      timeLine: item[0],
+      list: item[1]
+    }))
+    const count = await this.articleRep.count({
+      where: { status: true }
+    })
+    return { res, count }
+  }
+
   async findPinned() {
     const res = (
       await this.articleRep.find({

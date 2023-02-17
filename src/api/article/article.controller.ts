@@ -33,6 +33,12 @@ export class ArticleController {
   create(@Body() article: CreateArticleDto) {
     return this.articleService.create(article)
   }
+  // 获取归档
+  @Get('/archives')
+  @Menu(0)
+  findArchives(@Query() query: QueryInfo) {
+    return this.articleService.findArchives(query)
+  }
   // 获取置顶文章(默认取访问量最高项)
   @Get('/pinned')
   @Menu(0)

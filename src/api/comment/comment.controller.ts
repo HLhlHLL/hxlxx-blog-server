@@ -1,34 +1,83 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { CommentService } from './comment.service';
-import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+  ParseIntPipe,
+  Query
+} from '@nestjs/common'
+import { Menu } from 'src/libs/decorator/menu/menu.decorator'
+import { JwtAuthGuard } from 'src/libs/guard/jwt.guard'
+import { MenuGuard } from 'src/libs/guard/menu.guard'
+import { CommentService } from './comment.service'
+import { CreateCommentDto } from './dto/create-comment.dto'
 
 @Controller('comment')
+@Menu(23)
+@UseGuards(MenuGuard)
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @Post()
+  @Menu(0)
+  @UseGuards(JwtAuthGuard)
   create(@Body() createCommentDto: CreateCommentDto) {
-    return this.commentService.create(createCommentDto);
+    return this.commentService.create(createCommentDto)
   }
 
+  // 前台获取所有评论
   @Get()
-  findAll() {
-    return this.commentService.findAll();
+  @Menu(0)
+  findComments(
+    @Query('type', new ParseIntPipe()) type: number,
+    @Query('skip', new ParseIntPipe()) skip: number,
+    @Query('limit', new ParseIntPipe()) limit: number,
+    @Query('aid') aid?: string
+  ) {
+    return this.commentService.findComments(
+      type,
+      skip,
+      limit,
+      aid ? parseInt(aid) : 0
+    )
+  }
+
+  // 后台获取所有评论
+  @Get('/all')
+  @Menu(0)
+  findAll(
+    @Query('skip', new ParseIntPipe()) skip: number,
+    @Query('limit', new ParseIntPipe()) limit: number
+  ) {
+    return this.commentService.findAll(skip, limit)
+  }
+
+  @Get('/recently')
+  @Menu(0)
+  findRecently() {
+    return this.commentService.findRecently()
   }
 
   @Get(':id')
+  @Menu(0)
   findOne(@Param('id') id: string) {
-    return this.commentService.findOne(+id);
+    return this.commentService.findOne(+id)
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
-    return this.commentService.update(+id, updateCommentDto);
+  // 删除某一条评论
+  @Delete('/remove-one')
+  @UseGuards(JwtAuthGuard)
+  removeById(@Body('id', new ParseIntPipe()) id: number) {
+    return this.commentService.removeById(id)
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.commentService.remove(+id);
+  // 批量删除评论
+  @Delete('/remove-all')
+  @UseGuards(JwtAuthGuard)
+  removeByIds(@Body('ids') ids: number[]) {
+    return this.commentService.removeByIds(ids)
   }
 }

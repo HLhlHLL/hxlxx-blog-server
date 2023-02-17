@@ -26,6 +26,7 @@ import { MailerModule } from '@nestjs-modules/mailer'
 import { JwtModule } from '@nestjs/jwt'
 import { LocalStrategy } from './libs/strategies/local.strategy'
 import { JwtStrategy } from './libs/strategies/jwt.strategy'
+import { TalkModule } from './api/talk/talk.module';
 
 @Module({
   imports: [
@@ -94,7 +95,8 @@ import { JwtStrategy } from './libs/strategies/jwt.strategy'
     MenuModule,
     SiteModule,
     OperationLoggerModule,
-    AlbumModule
+    AlbumModule,
+    TalkModule
   ],
   controllers: [AppController],
   providers: [

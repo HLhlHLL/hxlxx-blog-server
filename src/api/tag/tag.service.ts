@@ -88,11 +88,18 @@ export class TagService {
   }
 
   async removeByIds(ids: number[]) {
-    await this.manager.transaction(async (_manager) => {
-      for (const id of ids) {
-        await _manager.delete(Tag, id)
-      }
-    })
-    return '批量删除文章标签成功！'
+    try {
+      await this.manager.transaction(async (_manager) => {
+        for (const id of ids) {
+          await _manager.delete(Tag, id)
+        }
+      })
+      return '批量删除文章标签成功！'
+    } catch (error) {
+      throwHttpException(
+        '当前标签下还有文章，删除失败！',
+        HttpStatus.BAD_REQUEST
+      )
+    }
   }
 }
