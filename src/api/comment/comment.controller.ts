@@ -35,13 +35,13 @@ export class CommentController {
     @Query('type', new ParseIntPipe()) type: number,
     @Query('skip', new ParseIntPipe()) skip: number,
     @Query('limit', new ParseIntPipe()) limit: number,
-    @Query('aid') aid?: string
+    @Query('topic_id') topic_id?: string
   ) {
     return this.commentService.findComments(
       type,
       skip,
       limit,
-      aid ? parseInt(aid) : 0
+      topic_id ? parseInt(topic_id) : 0
     )
   }
 

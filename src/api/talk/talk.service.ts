@@ -31,7 +31,11 @@ export class TalkService {
   }
 
   async findOneById(id: number) {
-    const res = await this.talkRep.findOneBy({ id })
+    const res = await this.talkRep
+      .createQueryBuilder('talk')
+      .leftJoinAndMapOne('talk.user', User, 'user', 'user.id = talk.uid')
+      .where('talk.id = :id', { id })
+      .getOne()
     return res
   }
 

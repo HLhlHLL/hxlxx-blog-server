@@ -26,7 +26,8 @@ import { MailerModule } from '@nestjs-modules/mailer'
 import { JwtModule } from '@nestjs/jwt'
 import { LocalStrategy } from './libs/strategies/local.strategy'
 import { JwtStrategy } from './libs/strategies/jwt.strategy'
-import { TalkModule } from './api/talk/talk.module';
+import { TalkModule } from './api/talk/talk.module'
+import { AboutModule } from './api/about/about.module'
 
 @Module({
   imports: [
@@ -61,7 +62,7 @@ import { TalkModule } from './api/talk/talk.module';
     }),
     JwtModule.register({
       secret: config.TOKEN_SECRET,
-      signOptions: { expiresIn: '1h' }
+      signOptions: { expiresIn: '30m' }
     }),
     MailerModule.forRoot({
       transport: {
@@ -96,7 +97,8 @@ import { TalkModule } from './api/talk/talk.module';
     SiteModule,
     OperationLoggerModule,
     AlbumModule,
-    TalkModule
+    TalkModule,
+    AboutModule
   ],
   controllers: [AppController],
   providers: [

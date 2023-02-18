@@ -18,7 +18,7 @@ export class UserService {
   async register({ password, email, code }: CreateUserDto, emailCode: string) {
     const isExist = await this.userRep.findOneBy({ email })
     if (isExist) {
-      throwHttpException('邮箱已经存在！', HttpStatus.BAD_REQUEST)
+      throwHttpException('该邮箱已被注册！', HttpStatus.BAD_REQUEST)
     }
     if (emailCode !== code) {
       throwHttpException('验证码错误！', HttpStatus.BAD_REQUEST)

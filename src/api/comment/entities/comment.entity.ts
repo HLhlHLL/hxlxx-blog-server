@@ -16,7 +16,7 @@ export class Comment {
   @Column({
     nullable: true
   })
-  aid: number
+  topic_id: number
 
   @Column({
     nullable: true

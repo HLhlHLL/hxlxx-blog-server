@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common'
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm'
 import { throwHttpException } from 'src/libs/utils'
 import { EntityManager, Repository } from 'typeorm'
+import { Talk } from '../talk/entities/talk.entity'
 import { User } from '../user/entities/user.entity'
 import { CreateCommentDto } from './dto/create-comment.dto'
 import { Comment } from './entities/comment.entity'
@@ -16,17 +17,33 @@ export class CommentService {
   async create(createCommentDto: CreateCommentDto) {
     const comment = new Comment()
     Object.assign(comment, createCommentDto)
-    const res = await this.commentRep.save(comment)
+    let res = await this.manager.save(Comment, comment)
+    // 当类型为说说评论时需要更新 talk.comment_count
+    if (comment.type === 3) {
+      const talk = await this.manager.findOne(Talk, {
+        where: { id: res.topic_id }
+      })
+      await this.manager.update(Talk, talk.id, {
+        comment_count: talk.comment_count + 1
+      })
+    }
+    // this.manager.transaction(async (_manager) => {
+    // })
     return res
   }
 
-  async findComments(type: number, skip: number, limit: number, aid?: number) {
+  async findComments(
+    type: number,
+    skip: number,
+    limit: number,
+    topic_id?: number
+  ) {
     const res = []
     const [parent, count] = await this.commentRep
       .createQueryBuilder('comment')
       .leftJoinAndMapOne('comment.user', User, 'user', 'user.id = comment.uid')
       .where('comment.type = :type and comment.pid is null', { type })
-      .andWhere(`${aid ? `comment.aid = ${aid}` : '1'}`)
+      .andWhere(`${topic_id ? `comment.topic_id = ${topic_id}` : '1'}`)
       .orderBy({ 'comment.created_at': 'DESC' })
       .skip(skip)
       .take(limit)

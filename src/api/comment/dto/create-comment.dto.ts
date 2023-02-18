@@ -5,7 +5,7 @@ export class CreateCommentDto {
 
   pid: number
 
-  aid: number
+  topic_id: number
 
   reply_to?: string
 
