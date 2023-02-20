@@ -25,6 +25,7 @@ export class OperationLoggerService {
         'status_code',
         'created_at'
       ],
+      order: { created_at: 'DESC' },
       skip: skip ? parseInt(skip) : undefined,
       take: limit ? parseInt(limit) : undefined
     })

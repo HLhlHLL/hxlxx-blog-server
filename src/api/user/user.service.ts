@@ -34,11 +34,13 @@ export class UserService {
     return res
   }
 
-  async findAll() {
+  async findAll(skip: number, limit: number) {
     const [res, count] = await this.userRep
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.role', 'role')
       .select(['user', 'role.id', 'role.role_name'])
+      .skip(skip)
+      .take(limit)
       .getManyAndCount()
     return { res, count }
   }

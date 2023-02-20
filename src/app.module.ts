@@ -28,6 +28,7 @@ import { LocalStrategy } from './libs/strategies/local.strategy'
 import { JwtStrategy } from './libs/strategies/jwt.strategy'
 import { TalkModule } from './api/talk/talk.module'
 import { AboutModule } from './api/about/about.module'
+import { LinkModule } from './api/link/link.module'
 
 @Module({
   imports: [
@@ -98,7 +99,8 @@ import { AboutModule } from './api/about/about.module'
     OperationLoggerModule,
     AlbumModule,
     TalkModule,
-    AboutModule
+    AboutModule,
+    LinkModule
   ],
   controllers: [AppController],
   providers: [

@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common'
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm'
 import { throwHttpException } from 'src/libs/utils'
 import { EntityManager, Repository } from 'typeorm'
+import { Article } from '../article/entities/article.entity'
 import { Talk } from '../talk/entities/talk.entity'
 import { User } from '../user/entities/user.entity'
 import { CreateCommentDto } from './dto/create-comment.dto'
@@ -27,8 +28,6 @@ export class CommentService {
         comment_count: talk.comment_count + 1
       })
     }
-    // this.manager.transaction(async (_manager) => {
-    // })
     return res
   }
 
@@ -74,6 +73,15 @@ export class CommentService {
       .skip(skip)
       .take(limit)
       .getManyAndCount()
+    for (let i = 0; i < res.length; i++) {
+      const tmp = res[i] as any
+      if (tmp.type === 2) {
+        const article = await this.manager.findOneBy(Article, {
+          id: tmp.topic_id
+        })
+        tmp.article_title = article.title
+      }
+    }
     return { res, count }
   }
 

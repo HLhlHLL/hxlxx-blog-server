@@ -150,8 +150,7 @@ export class ArticleService {
   }
 
   async findAllDraft(query?: QueryInfo) {
-    const res = await Article.findAll(query, 0)
-    const count = await this.articleRep.countBy({ status: false })
+    const [res, count] = await Article.findAll(query, 0)
     return { res, count }
   }
 

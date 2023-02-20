@@ -7,20 +7,26 @@ import {
 } from 'typeorm'
 
 @Entity()
-export class Talk {
+export class Link {
   @PrimaryGeneratedColumn('increment')
   id: number
 
   @Column()
-  uid: number
+  link_url: string
 
   @Column()
-  content: string
+  link_name: string
+
+  @Column()
+  link_avatar: string
+
+  @Column()
+  link_intro: string
 
   @Column({
-    default: 0
+    default: false
   })
-  comment_count: number
+  status: boolean
 
   @CreateDateColumn()
   created_at: Date

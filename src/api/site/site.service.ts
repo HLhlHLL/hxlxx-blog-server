@@ -7,6 +7,7 @@ import { Category } from '../category/entities/category.entity'
 import { Tag } from '../tag/entities/tag.entity'
 import { User } from '../user/entities/user.entity'
 import { Site } from './entities/site.entity'
+import { Comment } from '../comment/entities/comment.entity'
 import { WebsiteConfig } from './entities/website-config.entity'
 
 @Injectable()
@@ -23,6 +24,7 @@ export class SiteService {
     const articleCount = await this.manager.count(Article, {
       where: { status: true }
     })
+    const commentCount = await this.manager.count(Comment)
     const articleCategoryCount = await this.manager
       .createQueryBuilder(Category, 'category')
       .innerJoinAndSelect('category.articles', 'article')
@@ -51,6 +53,7 @@ export class SiteService {
     return {
       userCount,
       articleCount,
+      commentCount,
       articleCategoryCount,
       viewTimes,
       weeklyViewTimes

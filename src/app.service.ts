@@ -85,6 +85,10 @@ export class AppService {
   }
 
   async sendEmailCode(code: string, info: any) {
+    const isExist = await this.manager.findOneBy(User, { email: info.email })
+    if (isExist) {
+      throwHttpException('该邮箱已被注册！', HttpStatus.BAD_REQUEST)
+    }
     const date = dayjs(new Date()).format('YYYY年MM月DD日 HH:mm:ss')
     const sendMailOptions: ISendMailOptions = {
       to: info.email,

@@ -24,6 +24,7 @@ export class TalkService {
     const [res, count] = await this.talkRep
       .createQueryBuilder('talk')
       .leftJoinAndMapOne('talk.user', User, 'user', 'user.id = talk.uid')
+      .orderBy({ 'talk.created_at': 'DESC' })
       .skip(skip)
       .take(limit)
       .getManyAndCount()

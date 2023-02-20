@@ -2,7 +2,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
 } from 'typeorm'
 
 @Entity()
@@ -32,7 +33,10 @@ export class Comment {
   content: string
 
   @CreateDateColumn()
-  created_at: string
+  created_at: Date
+
+  @UpdateDateColumn()
+  updated_at: Date
 
   @Column()
   type: number

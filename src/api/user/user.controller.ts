@@ -8,7 +8,8 @@ import {
   Delete,
   ParseIntPipe,
   UseGuards,
-  Session
+  Session,
+  Query
 } from '@nestjs/common'
 import { UserService } from './user.service'
 import { CreateUserDto } from './dto/create-user.dto'
@@ -32,8 +33,11 @@ export class UserController {
   @Get()
   @Menu(0)
   @UseGuards(JwtAuthGuard)
-  findAll() {
-    return this.userService.findAll()
+  findAll(
+    @Query('skip', new ParseIntPipe()) skip: number,
+    @Query('limit', new ParseIntPipe()) limit: number
+  ) {
+    return this.userService.findAll(skip, limit)
   }
   // 获取某个用户
   @Get(':id')
