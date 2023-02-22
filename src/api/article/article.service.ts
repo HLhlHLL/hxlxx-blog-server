@@ -91,20 +91,24 @@ export class ArticleService {
       .getOne()
     const first = await Article.getQueryBuilder()
       .orderBy({ 'article.id': 'ASC' })
+      .where('article.status = :status', { status: true })
       .limit(1)
       .getOne()
     const last = await Article.getQueryBuilder()
       .orderBy({ 'article.id': 'DESC' })
+      .where('article.status = :status', { status: true })
       .limit(1)
       .getOne()
     const pre = await Article.getQueryBuilder()
       .orderBy({ 'article.id': 'DESC' })
-      .where('article.id < :id', { id })
+      .where('article.status = :status', { status: true })
+      .andWhere('article.id < :id', { id })
       .limit(1)
       .getOne()
     const next = await Article.getQueryBuilder()
       .orderBy({ 'article.id': 'ASC' })
-      .where('article.id > :id', { id })
+      .where('article.status = :status', { status: true })
+      .andWhere('article.id > :id', { id })
       .limit(1)
       .getOne()
     if (ip !== '127.0.0.1') {
@@ -117,7 +121,7 @@ export class ArticleService {
     }
   }
 
-  async searchArticle(query?: QueryInfo) {
+  async searchAll(query?: QueryInfo) {
     const res = await Article.searchArticle(query)
     const count = await this.articleRep
       .createQueryBuilder()
@@ -132,6 +136,11 @@ export class ArticleService {
       })
       .getCount()
     return { res, count }
+  }
+
+  async searchAllPublished(keyword?: string) {
+    const res = await Article.searchArticle({ keyword }, true)
+    return res
   }
 
   async findTopFive() {

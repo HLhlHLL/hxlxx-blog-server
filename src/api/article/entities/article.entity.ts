@@ -148,7 +148,7 @@ export class Article extends BaseEntity {
     return this.getQueryBuilder().where('article.id = :id', { id }).getOne()
   }
 
-  static searchArticle(query: QueryInfo) {
+  static searchArticle(query: QueryInfo, status?: boolean) {
     const skip = query.skip ? parseInt(query.skip) : undefined
     const limit = query.limit ? parseInt(query.limit) : undefined
     return this.getQueryBuilder()
@@ -161,6 +161,7 @@ export class Article extends BaseEntity {
       .orWhere('article.content like :keyword', {
         keyword: `%${query.keyword || ''}%`
       })
+      .andWhere(`${status ? 'article.status = 1' : '1'}`)
       .orderBy('article.id', 'DESC')
       .skip(skip)
       .take(limit)

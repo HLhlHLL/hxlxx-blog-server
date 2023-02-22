@@ -69,11 +69,17 @@ export class ArticleController {
   createDraft(@Body() draft: CreateDraftDto) {
     return this.articleService.create(draft)
   }
-  // 查询所有文章
+  // 根据关键字查询所有文章
+  @Get('/search-all')
+  @Menu(0)
+  searchAll(@Query() query: QueryInfo) {
+    return this.articleService.searchAll(query)
+  }
+  // 根据关键字查询所有已发布文章
   @Get('/search')
   @Menu(0)
-  findAll(@Query() query: QueryInfo) {
-    return this.articleService.searchArticle(query)
+  searchAllPublished(@Query('keyword') keyword: string) {
+    return this.articleService.searchAllPublished(keyword)
   }
   // 查询访问量前五的文章
   @Get('/top5')
